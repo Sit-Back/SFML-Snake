@@ -2,7 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
-#include "utility.hpp"
+#include "movement.hpp"
 #include "grid.hpp"
 #include "player.hpp"
 

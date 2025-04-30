@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <utility.hpp>
+#include <movement.hpp>
 
 const float MOVEMENT_SPEED = 1.f;
 

@@ -1,4 +1,4 @@
-#include "utility.hpp"
+#include "movement.hpp"
 
 sf::Vector2f direction_to_vector(Direction direction, float move_speed) {
     switch (direction) {
