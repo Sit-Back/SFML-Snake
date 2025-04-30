@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 const float MOVEMENT_SPEED = 1.f;
 const int MOVE_QUEUE_SIZE = 2;
@@ -14,7 +15,9 @@ class Player {
             RIGHT
         };
 
-        Player() : sprite(5.f) {
+        Player() {
+            sprite.setRadius(5.f);
+            sprite.setFillColor(sf::Color(245, 66, 129));
             set_move_direction(Player::MovementDirection::RIGHT);
         }
 

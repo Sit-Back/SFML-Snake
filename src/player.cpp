@@ -27,7 +27,7 @@ void Player::update() {
         }
     }
 
-    sf::Vector2f movement_vector = direction_to_vector(direction);
+    sf::Vector2f movement_vector = direction_to_vector(direction, MOVEMENT_SPEED);
     sprite.move(sf::Vector2f{(float)movement_vector.x, (float)movement_vector.y});
 }
 
@@ -37,16 +37,16 @@ void Player::add_move_to_buffer(const Player::MovementDirection move) {
     {input_buffer.push(move);}
 }
 
-sf::Vector2f direction_to_vector(Player::MovementDirection direction) {
+sf::Vector2f direction_to_vector(Player::MovementDirection direction, float magnitude) {
     switch (direction) {
         case (Player::MovementDirection::UP):
-            return sf::Vector2f{0, -MOVEMENT_SPEED};
+            return sf::Vector2f{0, -magnitude};
         case (Player::MovementDirection::DOWN):
-            return sf::Vector2f{0, MOVEMENT_SPEED};
+            return sf::Vector2f{0, magnitude};
         case (Player::MovementDirection::LEFT):
-            return sf::Vector2f{-MOVEMENT_SPEED, 0};
+            return sf::Vector2f{-magnitude, 0};
         case (Player::MovementDirection::RIGHT):
-            return sf::Vector2f{MOVEMENT_SPEED, 0};
+            return sf::Vector2f{magnitude, 0};
     }
 
     throw std::invalid_argument("Invalid direction supplied");
