@@ -2,7 +2,6 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
-#include "movement.hpp"
 #include "grid.hpp"
 #include "player.hpp"
 
@@ -21,7 +20,6 @@ int main()
     window.setView(view);
 
     Player player; 
-    std::queue<Direction> input_buffer;
     sf::VertexArray grid = generate_grid(sf::Vector2u{20, 20}, GRID_SIZE);
 
     while (window.isOpen())
@@ -37,23 +35,23 @@ int main()
                 switch (keycode)
                 {
                 case sf::Keyboard::Key::Left:
-                    add_move(input_buffer, LEFT);
+                    player.add_move_to_buffer(Player::MovementDirection::LEFT);
                     break;
                 case sf::Keyboard::Key::Right:
-                    add_move(input_buffer, RIGHT);
+                    player.add_move_to_buffer(Player::MovementDirection::RIGHT);
                     break;
                 case sf::Keyboard::Key::Up:
-                    add_move(input_buffer, UP);
+                    player.add_move_to_buffer(Player::MovementDirection::UP);
                     break;
                 case sf::Keyboard::Key::Down:
-                    add_move(input_buffer, DOWN);
+                    player.add_move_to_buffer(Player::MovementDirection::DOWN);
                     break;
                 }
             }
         }
 
         
-        player.update(input_buffer);
+        player.update();
         window.clear(sf::Color::Black);
         window.draw(grid);
         player.draw(window);
