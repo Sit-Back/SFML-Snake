@@ -3,11 +3,8 @@
 #include <queue>
 #include <cmath>
 #include "utility.hpp"
+#include "grid.hpp"
 #include "player.hpp"
-
-const float MOVEMENT_SPEED = 1.f;
-const float GRID_SIZE = 10.f;
-
 
 int main()
 {
@@ -23,8 +20,8 @@ int main()
     sf::View view(sf::FloatRect({0,0},{200, 200}));
     window.setView(view);
 
-    Player player(MOVEMENT_SPEED); 
-    InputBuffer input_buffer(2);
+    Player player; 
+    std::queue<Direction> input_buffer;
     sf::VertexArray grid = generate_grid(sf::Vector2u{20, 20}, GRID_SIZE);
 
     while (window.isOpen())
@@ -40,29 +37,23 @@ int main()
                 switch (keycode)
                 {
                 case sf::Keyboard::Key::Left:
-                    input_buffer.add_move(LEFT);
+                    add_move(input_buffer, LEFT);
                     break;
                 case sf::Keyboard::Key::Right:
-                input_buffer.add_move(RIGHT);
+                    add_move(input_buffer, RIGHT);
                     break;
                 case sf::Keyboard::Key::Up:
-                    input_buffer.add_move(UP);
+                    add_move(input_buffer, UP);
                     break;
                 case sf::Keyboard::Key::Down:
-                    input_buffer.add_move(DOWN);
+                    add_move(input_buffer, DOWN);
                     break;
                 }
             }
         }
-        if (!input_buffer.empty() ) {
-            Direction move_direction = player.get_move_direction();
-            sf::Vector2f position = player.get_position();
-            if (std::fmod(position.x, GRID_SIZE) < 0.01f && std::fmod(position.y, GRID_SIZE) < 0.01f) {
-                player.set_move_direction(*input_buffer.get_next_direction());
-            }
-        }
-        player.update();
-        sf::Vector2f pos = player.get_position();
+
+        
+        player.update(input_buffer);
         window.clear(sf::Color::Black);
         window.draw(grid);
         player.draw(window);

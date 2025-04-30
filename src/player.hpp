@@ -3,9 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <utility.hpp>
 
+const float MOVEMENT_SPEED = 1.f;
+
 class Player {
     public: 
-        Player(float move_speed) : sprite(5.f), move_speed(move_speed) {
+        Player() : sprite(5.f) {
             set_move_direction(RIGHT);
         }
 
@@ -17,10 +19,8 @@ class Player {
 
         void set_move_direction(Direction new_direction);
 
-        void update();
+        void update(std::queue<Direction>& input_buffer);
     private:
         sf::CircleShape sprite;
         Direction direction;
-        float move_speed;
-        
 };

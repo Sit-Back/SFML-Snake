@@ -1,25 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <queue>
+#include <SFML/Graphics.hpp>
+
+const int MOVE_QUEUE_SIZE = 2;
 
 enum Direction { UP, DOWN, LEFT, RIGHT };
 
 sf::Vector2f direction_to_vector(Direction direction, float move_speed);
 
-sf::VertexArray generate_grid(sf::Vector2u dimensions, float size);
+std::optional<Direction> get_next_direction(std::queue<Direction>& move_queue);
 
-class InputBuffer {
-    public:
-        InputBuffer(int buffer_size) : buffer_size(buffer_size) {}
-
-        std::optional<Direction> get_next_direction();
-
-        void add_move(Direction move);
-
-        bool empty();
-
-    private:
-        int buffer_size;
-        std::queue<Direction> move_queue;
-};
+void add_move( std::queue<Direction>& move_queue, const Direction move);
