@@ -13,13 +13,13 @@ int main()
          sf::Style::Titlebar | sf::Style::Close
     );
     
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(1);
     window.setKeyRepeatEnabled(false);
 
-    sf::View view(sf::FloatRect({0,0},{200, 200}));
-    window.setView(view);
+    sf::View gridView(sf::FloatRect({0,0},{200, 200}));
+    window.setView(gridView);
 
-    Player player; 
+    Player player(GRID_SIZE); 
     sf::VertexArray grid = generate_grid(sf::Vector2u{20, 20}, GRID_SIZE);
 
     while (window.isOpen())
@@ -35,23 +35,23 @@ int main()
                 switch (keycode)
                 {
                 case sf::Keyboard::Key::Left:
-                    player.add_move_to_buffer(Player::MovementDirection::LEFT);
+                    player.add_move_to_buffer(MovementDirection::LEFT);
                     break;
                 case sf::Keyboard::Key::Right:
-                    player.add_move_to_buffer(Player::MovementDirection::RIGHT);
+                    player.add_move_to_buffer(MovementDirection::RIGHT);
                     break;
                 case sf::Keyboard::Key::Up:
-                    player.add_move_to_buffer(Player::MovementDirection::UP);
+                    player.add_move_to_buffer(MovementDirection::UP);
                     break;
                 case sf::Keyboard::Key::Down:
-                    player.add_move_to_buffer(Player::MovementDirection::DOWN);
+                    player.add_move_to_buffer(MovementDirection::DOWN);
                     break;
                 }
             }
         }
 
-        
         player.update();
+        
         window.clear(sf::Color::Black);
         window.draw(grid);
         player.draw(window);
