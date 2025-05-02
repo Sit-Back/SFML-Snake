@@ -4,6 +4,7 @@
 #include <cmath>
 #include "grid.hpp"
 #include "player.hpp"
+#include "utility.hpp"
 
 int main()
 {
@@ -13,14 +14,14 @@ int main()
          sf::Style::Titlebar | sf::Style::Close
     );
     
-    window.setFramerateLimit(1);
+    window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
 
     sf::View gridView(sf::FloatRect({0,0},{200, 200}));
     window.setView(gridView);
 
     Player player(GRID_SIZE); 
-    sf::VertexArray grid = generate_grid(sf::Vector2u{20, 20}, GRID_SIZE);
+    Grid game_grid = Grid(sf::Vector2u{20, 20}, GRID_SIZE);
 
     while (window.isOpen())
     {
@@ -51,9 +52,9 @@ int main()
         }
 
         player.update();
-        
+        sf::Vector2f test = rotate_vector(sf::Vector2f{0.f, 1.f}, M_PI_2);
         window.clear(sf::Color::Black);
-        window.draw(grid);
+        window.draw(game_grid.get_verticies());
         player.draw(window);
         window.display();
     }

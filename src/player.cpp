@@ -3,6 +3,7 @@
 #include <iostream>
 #include "player.hpp"
 #include "grid.hpp"
+#include "utility.hpp"
 
 std::optional<MovementDirection> Player::get_next_direction() {
     if (_inputBuffer.size() > 0) {
@@ -24,15 +25,23 @@ sf::Vector2f Player::get_position() {
     return _head.getPosition();
 }
 
+sf::Vector2f Player::get_head_center() {
+    sf::Vector2f headCenter;
+    headCenter.x = get_position().x + _headRadius;
+    headCenter.y = get_position().y + _headRadius;
+
+    return headCenter;
+}
+
 MovementDirection Player::get_move_direction() {
     return direction;
 }
 
 void Player::update_tail() {
-    
-    sf::Vector2f currentPos = _head.getPosition();
-    _stripPositions.push_front(sf::Vertex({currentPos, PLAYER_COLOR}));
-    _stripPositions.push_front(sf::Vertex({calc_width_vertex(currentPos, direction, _bodyWidth), PLAYER_COLOR}));
+    sf::Vector2f currentPos = get_head_center();
+    std::array<sf::Vector2f, 2> points = calc_width_vertex(currentPos, direction_to_radian(direction), _bodyWidth/2-2);
+    _stripPositions.push_front(sf::Vertex({points[0], PLAYER_COLOR}));
+    _stripPositions.push_front(sf::Vertex({points[1], PLAYER_COLOR}));
 
     _tailStrip.clear();
     for (int i = 0; i < _stripPositions.size(); i++) {
@@ -40,22 +49,30 @@ void Player::update_tail() {
     }
 }
 
-sf::Vector2f Player::calc_width_vertex(sf::Vector2f position, MovementDirection movement_direction, float width) {
-    if (movement_direction == MovementDirection::LEFT || movement_direction == MovementDirection::RIGHT) {
-        position.y += width;
-    } else {
-        position.x += width;
-    }
+std::array<sf::Vector2f, 2> Player::calc_width_vertex(sf::Vector2f position, float radiansDirection, float width) {
+    //Get a direction vector of the angle and stretch to the length of width
+    sf::Vector2f initialVector;
+    initialVector.x = width*cos(radiansDirection);
+    initialVector.y = width*sin(radiansDirection);
 
-    return position;
+    //Rotate the initial vector to both sides
+    sf::Vector2f rotation1 = rotate_vector(initialVector, M_PI_2);
+    sf::Vector2f rotation2 = rotate_vector(initialVector, -M_PI_2);
+    
+    //Apply transformation to the initial position supplied
+    sf::Vector2f pos1{position.x + rotation1.x, position.y + rotation1.y};
+    sf::Vector2f pos2{position.x + rotation2.x, position.y + rotation2.y};
+
+    return std::array<sf::Vector2f, 2>{pos1, pos2};
 }
 
 void Player::update() {
     sf::Vector2f position = get_position();
         if (std::fmod(position.x, GRID_SIZE) < 0.01f && std::fmod(position.y, GRID_SIZE) < 0.01f) {
-            update_tail();
             if (!_inputBuffer.empty()) {
                 direction = *get_next_direction();
+            } else {
+                update_tail();
             }
         }
     
@@ -68,6 +85,25 @@ void Player::add_move_to_buffer(const MovementDirection move) {
     if ((_inputBuffer.empty() || _inputBuffer.back() != move) 
         && _inputBuffer.size() < MOVE_QUEUE_SIZE) 
     {_inputBuffer.push(move);}
+}
+
+float direction_to_radian(MovementDirection direction) {
+    switch (direction) {
+        case MovementDirection::UP:
+            return -M_PI_2;
+            break;
+        case MovementDirection::DOWN:
+            return M_PI_2;
+            break;
+        case MovementDirection::LEFT:
+            return M_PI;
+            break;
+        case MovementDirection::RIGHT:
+            return 0.f;
+            break;
+    }
+
+    return 0;
 }
 
 sf::Vector2f direction_to_vector(MovementDirection direction, float magnitude) {

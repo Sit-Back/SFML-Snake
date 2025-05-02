@@ -1,13 +1,14 @@
 #include "grid.hpp"
 
-sf::VertexArray generate_grid(sf::Vector2u dimensions, float size) {
-    int grid_square_count = dimensions.x * dimensions.y;
-    sf::VertexArray verticies(sf::PrimitiveType::Triangles, grid_square_count*6);
+Grid::Grid(sf::Vector2u dimensions, float size) {
+    _size = size;
+    sf::VertexArray verticies(sf::PrimitiveType::Triangles, dimensions.x * dimensions.y*6);
     int square_counter = 0;
     sf::Color square_color;
 
-    for (int column = 0; column < dimensions.x; column++) {
-       for (int row = 0; row < dimensions.y; row++) {
+    for (int row = 0; row < dimensions.y; row++) {
+        std::vector<sf::Vector2f> columnValues;
+        for (int column = 0; column < dimensions.x; column++) {
             if ((column+row)%2 == 0) {
                 square_color.r = 163;
                 square_color.g = 201;
@@ -18,10 +19,12 @@ sf::VertexArray generate_grid(sf::Vector2u dimensions, float size) {
                 square_color.b = 133;
             }
 
-            sf::Vector2f top_left = {column*size, row*size};
-            sf::Vector2f top_right{column*size + size, row*size};
-            sf::Vector2f bottom_left{column*size, row*size+size};
-            sf::Vector2f bottom_right{column*size + size, row*size+size};
+            sf::Vector2f top_left = {column*_size, row*_size};
+            sf::Vector2f top_right{column*_size + _size, row*_size};
+            sf::Vector2f bottom_left{column*_size, row*_size+_size};
+            sf::Vector2f bottom_right{column*_size + _size, row*_size+_size};
+
+            columnValues.push_back(top_left);
 
             verticies[square_counter*6].position = top_left;
             verticies[square_counter*6].color = square_color;
@@ -39,7 +42,17 @@ sf::VertexArray generate_grid(sf::Vector2u dimensions, float size) {
 
             square_counter++;
        }
+
+       _gridPositionsMatrix.push_back(columnValues);
     }
 
-    return verticies;
+    _gridVerticies = verticies;
+}
+
+sf::VertexArray Grid::get_verticies() {
+    return _gridVerticies;
+}
+
+sf::Vector2f Grid::grid_pos_coords(unsigned int row, unsigned int column) {
+    return _gridPositionsMatrix.at(row).at(column);
 }
