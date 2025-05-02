@@ -6,12 +6,14 @@ const float GRID_SIZE = 10.f;
 
 class Grid {
     public:
-        Grid(sf::Vector2u dimensions, float size);
+        const sf::Vector2u _dimensions;
+        const float _size;
 
-        sf::VertexArray get_verticies();
-        sf::Vector2f grid_pos_coords(unsigned int row, unsigned int column);
+        Grid(sf::Vector2u dimensions, float size);
+    
+        sf::VertexArray get_verticies() const;
+        sf::Vector2f grid_pos_coords(unsigned int row, unsigned int column) const;
     private:
         sf::VertexArray _gridVerticies;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
-        float _size;
 };

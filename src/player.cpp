@@ -21,25 +21,29 @@ void Player::draw(sf::RenderWindow& window) {
     window.draw(_tailStrip);
 }
 
-sf::Vector2f Player::get_position() {
+sf::Vector2f Player::get_position() const {
     return _head.getPosition();
 }
 
-sf::Vector2f Player::get_head_center() {
+sf::Vector2u Player::get_position_grid() const {
+    return _headpos;
+}
+
+sf::Vector2f Player::get_head_center() const {
     sf::Vector2f headCenter;
-    headCenter.x = get_position().x + _headRadius;
-    headCenter.y = get_position().y + _headRadius;
+    headCenter.x = get_position().x + _bodyWidth/2;
+    headCenter.y = get_position().y + _bodyWidth/2;
 
     return headCenter;
 }
 
-MovementDirection Player::get_move_direction() {
-    return direction;
+MovementDirection Player::get_move_direction() const {
+    return _direction;
 }
 
 void Player::update_tail() {
     sf::Vector2f currentPos = get_head_center();
-    std::array<sf::Vector2f, 2> points = calc_width_vertex(currentPos, direction_to_radian(direction), _bodyWidth/2-2);
+    std::array<sf::Vector2f, 2> points = calc_width_vertex(currentPos, direction_to_radian(_direction), _bodyWidth/2-1);
     _stripPositions.push_front(sf::Vertex({points[0], PLAYER_COLOR}));
     _stripPositions.push_front(sf::Vertex({points[1], PLAYER_COLOR}));
 
@@ -67,18 +71,15 @@ std::array<sf::Vector2f, 2> Player::calc_width_vertex(sf::Vector2f position, flo
 }
 
 void Player::update() {
-    sf::Vector2f position = get_position();
-        if (std::fmod(position.x, GRID_SIZE) < 0.01f && std::fmod(position.y, GRID_SIZE) < 0.01f) {
-            if (!_inputBuffer.empty()) {
-                direction = *get_next_direction();
-            } else {
-                update_tail();
-            }
-        }
-    
+    if (!_inputBuffer.empty()) {
+        _direction = *get_next_direction();
+    } else {
+        update_tail();
+    }
 
-    sf::Vector2f movement_vector = direction_to_vector(direction, MOVEMENT_SPEED);
-    _head.move(movement_vector);
+    move_player(_direction);
+    _head.setPosition(_gameGrid.grid_pos_coords(_headpos.y, _headpos.x));
+    
 } 
 
 void Player::add_move_to_buffer(const MovementDirection move) {
@@ -104,6 +105,27 @@ float direction_to_radian(MovementDirection direction) {
     }
 
     return 0;
+}
+
+void Player::move_player(MovementDirection direction) {
+    switch (direction) {
+        case (MovementDirection::UP):
+            _headpos.y -= 1;
+            break;
+        case (MovementDirection::DOWN):
+            if (_headpos.y < _gameGrid._dimensions.y-1) {
+                _headpos.y += 1;
+            }
+            break;
+        case (MovementDirection::LEFT):
+            _headpos.x -= 1;
+            break;
+        case (MovementDirection::RIGHT):
+            if (_headpos.x < _gameGrid._dimensions.x-1) {
+                _headpos.x += 1;
+            }
+            break;
+    }
 }
 
 sf::Vector2f direction_to_vector(MovementDirection direction, float magnitude) {
