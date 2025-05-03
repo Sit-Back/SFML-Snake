@@ -8,6 +8,6 @@ find_package(SFML 3.0 COMPONENTS Graphics System Window REQUIRED)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 add_executable(sfml-snake ${SOURCE_FILES})
 
-target_include_directories( sfml-snake PRIVATE ${CMAKE_SOURCE_DIR}/src )
+target_include_directories( sfml-snake PRIVATE ${CMAKE_SOURCE_DIR}/include )
 
 target_link_libraries(sfml-snake PRIVATE SFML::Graphics SFML::Window SFML::System)
