@@ -11,32 +11,25 @@ void Player::update() {
         _direction = *get_next_direction();
         move_player(_direction);
         update_tail();
-        _tailPosList.push_back(_headpos);
+        _tailPosList.push_back(_headPos);
     } else {
         move_player(_direction);
         update_tail();
     }
-    
-    
 } 
 
 void Player::update_tail() {
-    sf::Vector2f currentPos = get_head_center();
-    std::array<sf::Vector2f, 2> points = calc_width_vertex(currentPos, direction_to_radian(_direction), _bodyWidth/2-1);
-    _stripPositions.push_front(sf::Vertex({points[0], PLAYER_COLOR}));
-    _stripPositions.push_front(sf::Vertex({points[1], PLAYER_COLOR}));
-
     _tailStrip.clear();
-    for (int i = 0; i < _stripPositions.size(); i++) {
-        _tailStrip.append(_stripPositions[i]);
-    }
+    std::deque<sf::Vertex> stripPositions;
+    std::array<sf::Vector2f, 2> points = calc_width_vertex(_gameGrid.grid_pos_coords(_headPos), direction_to_radian(_direction), _bodyWidth/2-1);
+    _tailStrip.append(sf::Vertex({points[0], PLAYER_COLOR}));
+    _tailStrip.append(sf::Vertex({points[1], PLAYER_COLOR}));
 }
 
-
 //Support Functions
-std::optional<MovementDirection> Player::get_next_direction() {
+std::optional<Direction> Player::get_next_direction() {
     if (_inputBuffer.size() > 0) {
-        MovementDirection direction = _inputBuffer.front();
+        Direction direction = _inputBuffer.front();
         _inputBuffer.pop();
         
         return direction;
@@ -55,7 +48,7 @@ sf::Vector2f Player::get_position() const {
 }
 
 sf::Vector2u Player::get_position_grid() const {
-    return _headpos;
+    return _headPos;
 }
 
 sf::Vector2f Player::get_head_center() const {
@@ -66,7 +59,7 @@ sf::Vector2f Player::get_head_center() const {
     return headCenter;
 }
 
-MovementDirection Player::get_move_direction() const {
+Direction Player::get_move_direction() const {
     return _direction;
 }
 
@@ -87,7 +80,7 @@ std::array<sf::Vector2f, 2> Player::calc_width_vertex(sf::Vector2f position, flo
     return std::array<sf::Vector2f, 2>{pos1, pos2};
 }
 
-void Player::add_move_to_buffer(const MovementDirection move) {
+void Player::add_move_to_buffer(const Direction move) {
     if (
         (
             (_inputBuffer.empty() && _direction != move && _direction != get_opposite(move)) 
@@ -100,78 +93,29 @@ void Player::add_move_to_buffer(const MovementDirection move) {
     }
 }
 
-MovementDirection Player::get_opposite(MovementDirection direction) {
+void Player::move_player(Direction direction) {
     switch (direction) {
-        case (MovementDirection::UP):
-            return MovementDirection::DOWN;
-        case (MovementDirection::DOWN):
-            return MovementDirection::UP;
-        case (MovementDirection::LEFT):
-            return MovementDirection::RIGHT;
-        case (MovementDirection::RIGHT):
-            return MovementDirection::LEFT;
-    }
-
-    throw std::invalid_argument("Invalid direction supplied");
-}
-
-float direction_to_radian(MovementDirection direction) {
-    switch (direction) {
-        case MovementDirection::UP:
-            return -M_PI_2;
-            break;
-        case MovementDirection::DOWN:
-            return M_PI_2;
-            break;
-        case MovementDirection::LEFT:
-            return M_PI;
-            break;
-        case MovementDirection::RIGHT:
-            return 0.f;
-            break;
-    }
-
-    return 0;
-}
-
-void Player::move_player(MovementDirection direction) {
-    switch (direction) {
-        case (MovementDirection::UP):
-            if (_headpos.y > 0) {
-                _headpos.y -= 1;
+        case (Direction::UP):
+            if (_headPos.y > 0) {
+                _headPos.y -= 1;
             }
             break;
-        case (MovementDirection::DOWN):
-            if (_headpos.y < _gameGrid._dimensions.y-1) {
-                _headpos.y += 1;
+        case (Direction::DOWN):
+            if (_headPos.y < _gameGrid._dimensions.y-1) {
+                _headPos.y += 1;
             }
             break;
-        case (MovementDirection::LEFT):
-            if (_headpos.x > 0) {
-                _headpos.x -= 1;
+        case (Direction::LEFT):
+            if (_headPos.x > 0) {
+                _headPos.x -= 1;
             }
             break;
-        case (MovementDirection::RIGHT):
-            if (_headpos.x < _gameGrid._dimensions.x-1) {
-                _headpos.x += 1;
+        case (Direction::RIGHT):
+            if (_headPos.x < _gameGrid._dimensions.x-1) {
+                _headPos.x += 1;
             }
             break;
     }
 
-    _head.setPosition(_gameGrid.grid_pos_coords(_headpos.y, _headpos.x));
-}
-
-sf::Vector2f direction_to_vector(MovementDirection direction, float magnitude) {
-    switch (direction) {
-        case (MovementDirection::UP):
-            return sf::Vector2f{0, -magnitude};
-        case (MovementDirection::DOWN):
-            return sf::Vector2f{0, magnitude};
-        case (MovementDirection::LEFT):
-            return sf::Vector2f{-magnitude, 0};
-        case (MovementDirection::RIGHT):
-            return sf::Vector2f{magnitude, 0};
-    }
-
-    throw std::invalid_argument("Invalid direction supplied");
+    _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
 }

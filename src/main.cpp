@@ -40,16 +40,16 @@ int main()
                 switch (keycode)
                 {
                 case sf::Keyboard::Key::Left:
-                    player.add_move_to_buffer(MovementDirection::LEFT);
+                    player.add_move_to_buffer(Direction::LEFT);
                     break;
                 case sf::Keyboard::Key::Right:
-                    player.add_move_to_buffer(MovementDirection::RIGHT);
+                    player.add_move_to_buffer(Direction::RIGHT);
                     break;
                 case sf::Keyboard::Key::Up:
-                    player.add_move_to_buffer(MovementDirection::UP);
+                    player.add_move_to_buffer(Direction::UP);
                     break;
                 case sf::Keyboard::Key::Down:
-                    player.add_move_to_buffer(MovementDirection::DOWN);
+                    player.add_move_to_buffer(Direction::DOWN);
                     break;
                 }
             }

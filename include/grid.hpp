@@ -2,6 +2,18 @@
 
 #include <SFML/Graphics.hpp>
 
+enum class Direction {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
+Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid);
+Direction get_opposite(Direction direction);
+float direction_to_radian(Direction direction);
+sf::Vector2f direction_to_vector(Direction direction, float magnitude);
+
 class Grid {
     public:
         const sf::Vector2u _dimensions;
@@ -10,7 +22,7 @@ class Grid {
         Grid(sf::Vector2u dimensions, float size);
     
         sf::VertexArray get_verticies() const;
-        sf::Vector2f grid_pos_coords(unsigned int row, unsigned int column) const;
+        sf::Vector2f grid_pos_coords(sf::Vector2u position) const;
     private:
         sf::VertexArray _gridVerticies;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;

@@ -1,4 +1,64 @@
 #include "grid.hpp"
+#include <cmath>
+
+Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
+    sf::Vector2u difference{final_grid.x - initial_grid.x, final_grid.y - initial_grid.y};
+
+    if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
+    else if (difference.x < 0 && difference.y == 0) return Direction::LEFT;
+    else if (difference.y > 0 && difference.x == 0) return Direction::DOWN;
+    else if (difference.y < 0 && difference.x == 0) return Direction::UP;
+    else throw std::invalid_argument("No cardinal direction found. (diagonal or same point)");
+}
+
+Direction get_opposite(Direction direction) {
+    switch (direction) {
+        case (Direction::UP):
+            return Direction::DOWN;
+        case (Direction::DOWN):
+            return Direction::UP;
+        case (Direction::LEFT):
+            return Direction::RIGHT;
+        case (Direction::RIGHT):
+            return Direction::LEFT;
+    }
+
+    throw std::invalid_argument("Invalid direction supplied");
+}
+
+sf::Vector2f direction_to_vector(Direction direction, float magnitude) {
+    switch (direction) {
+        case (Direction::UP):
+            return sf::Vector2f{0, -magnitude};
+        case (Direction::DOWN):
+            return sf::Vector2f{0, magnitude};
+        case (Direction::LEFT):
+            return sf::Vector2f{-magnitude, 0};
+        case (Direction::RIGHT):
+            return sf::Vector2f{magnitude, 0};
+    }
+
+    throw std::invalid_argument("Invalid direction supplied");
+}
+
+float direction_to_radian(Direction direction) {
+    switch (direction) {
+        case Direction::UP:
+            return -M_PI_2;
+            break;
+        case Direction::DOWN:
+            return M_PI_2;
+            break;
+        case Direction::LEFT:
+            return M_PI;
+            break;
+        case Direction::RIGHT:
+            return 0.f;
+            break;
+    }
+
+    return 0;
+}
 
 Grid::Grid(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
     int square_counter = 0;
@@ -49,6 +109,6 @@ sf::VertexArray Grid::get_verticies() const {
     return _gridVerticies;
 }
 
-sf::Vector2f Grid::grid_pos_coords(unsigned int row, unsigned int column) const {
-    return _gridPositionsMatrix.at(row).at(column);
+sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position) const {
+    return _gridPositionsMatrix.at(position.y).at(position.x);
 }
