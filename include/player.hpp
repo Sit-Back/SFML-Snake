@@ -9,15 +9,19 @@ const float MOVEMENT_SPEED = 1.f;
 const int MOVE_QUEUE_SIZE = 2;
 const sf::Color PLAYER_COLOR(245, 66, 129);
 const int TAIL_UPDATE_DELAY = 5;
+const int TURN_RESOLUTION = 3;
 
 class Player {
     public: 
         //General Variables
         Direction _direction;
+        int _length;
 
         //Constructors
         Player(const Grid& gameGrid, float bodyWidth) : _bodyWidth(bodyWidth), _gameGrid(gameGrid){
-            _headPos = {1, 1};
+            _headPos = {11, 5};
+            _turnPosList.push_front(_headPos);
+            _length = 10;
 
             _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
             _head.setRadius(_bodyWidth/2);
@@ -26,6 +30,7 @@ class Player {
             _direction = Direction::RIGHT;
 
             _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+            update_tail();
         }
 
         //General Methods

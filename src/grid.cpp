@@ -2,7 +2,7 @@
 #include <cmath>
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
-    sf::Vector2u difference{final_grid.x - initial_grid.x, final_grid.y - initial_grid.y};
+    sf::Vector2i difference(final_grid.x - initial_grid.x, final_grid.y - initial_grid.y);
 
     if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
     else if (difference.x < 0 && difference.y == 0) return Direction::LEFT;

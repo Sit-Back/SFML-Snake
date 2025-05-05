@@ -6,8 +6,8 @@
 #include "player.hpp"
 #include "utility.hpp"
 
-const float UPDATE_RATE = 0.5f;
-const float GRID_SIZE = 20.f;
+const float UPDATE_RATE = 0.3f;
+const float GRID_SIZE = 800.0/15.0;
 
 int main()
 {
@@ -20,10 +20,10 @@ int main()
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
-    sf::View gridView(sf::FloatRect({0,0},{200, 200}));
+    sf::View gridView(sf::FloatRect({0,0},{800, 800}));
     window.setView(gridView);
 
-    Grid game_grid = Grid(sf::Vector2u{10, 10}, GRID_SIZE);
+    Grid game_grid = Grid(sf::Vector2u{15, 15}, GRID_SIZE);
     Player player(game_grid, GRID_SIZE); 
     sf::Clock timer;
 

@@ -9,11 +9,10 @@
 void Player::update() {
     if (!_inputBuffer.empty()) {
         _direction = *get_next_direction();
-        sf::Vector2u prevHeadPos = _headPos;
+        _turnPosList.push_front(_headPos);
         _gameGrid.move_entity(_headPos, _direction);
         _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
         update_tail();
-        _turnPosList.push_front(prevHeadPos);
     } else {
         _gameGrid.move_entity(_headPos, _direction);
         _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
@@ -23,17 +22,23 @@ void Player::update() {
 
 void Player::update_tail() {
     sf::Vector2u currentSearchPos = _headPos;
+    Direction searchDirection = get_opposite(_direction);
     _tailStrip.clear();
-    add_verticies(calc_width_vertex(_gameGrid.grid_pos_coords(_headPos), direction_to_radian(_direction), _bodyWidth/2-1));
+    add_verticies(calc_width_vertex(get_head_center(), direction_to_radian(searchDirection), _bodyWidth/2-1));
 
     int corner_index = 0;
-    while (corner_index < _turnPosList.size()) {
-        
-        //std::cout << _turnPosList[corner_index].x << " " << _turnPosList[corner_index].y << '\n';
-        corner_index++;
-    }
-    //std::cout << "--------------\n";
+    int traversed_squares = 0;
+    while (traversed_squares < _length) {
+        if (_turnPosList.size() > corner_index + 1 && currentSearchPos == _turnPosList[corner_index]) {
+            searchDirection = get_direction_to(currentSearchPos, _turnPosList[corner_index+1]);
+            corner_index++;
+        }
 
+        _gameGrid.move_entity(currentSearchPos, searchDirection);
+        sf::Vector2f vertexOrigin = _gameGrid.grid_pos_coords(currentSearchPos, get_square_location_for_search_dir(searchDirection));
+        add_verticies(calc_width_vertex(vertexOrigin, direction_to_radian(searchDirection), _bodyWidth/2-1));
+        traversed_squares++;
+    }
 }
 
 void Player::add_verticies(std::vector<sf::Vector2f> points) {
