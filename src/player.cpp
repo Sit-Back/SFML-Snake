@@ -43,7 +43,7 @@ void Player::add_verticies(std::vector<sf::Vector2f> points) {
 }
 
 //Support Functions
-Grid::SquareLocation Player::get_square_location_for_search_dir(Direction search_dir) {
+Grid::SquareLocation Player::get_square_location_for_search_dir(const Direction search_dir) const {
     switch (search_dir)
     {
     case Direction::LEFT:
@@ -99,7 +99,7 @@ Direction Player::get_move_direction() const {
     return _direction;
 }
 
-std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, float radiansDirection, float width) {
+std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, float radiansDirection, const float width) const {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
     initialVector.x = width*cos(radiansDirection);

@@ -53,8 +53,8 @@ class Player {
         
         //Methods
         std::optional<Direction> get_next_direction();
-        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, float radiansDirection, float width);
-        Grid::SquareLocation get_square_location_for_search_dir(Direction search_dir);
+        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, float radiansDirection, const float width) const;
+        Grid::SquareLocation get_square_location_for_search_dir(const Direction search_dir) const ;
         void add_verticies(std::vector<sf::Vector2f> points);
         void update_tail();
 };
