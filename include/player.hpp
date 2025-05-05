@@ -22,16 +22,15 @@ float direction_to_radian(MovementDirection direction);
 
 class Player {
     public: 
+        //General Variables
         MovementDirection _direction;
 
+        //Constructors
         Player(const Grid& gameGrid, float bodyWidth) : _bodyWidth(bodyWidth), _gameGrid(gameGrid){
             _head.setRadius(_bodyWidth/2);
             _head.setFillColor(PLAYER_COLOR);
 
             _headpos = {0, 0};
-
-            _removingTail = true;
-            _delayCounter = 0;
 
             _direction = MovementDirection::RIGHT;
 
@@ -43,33 +42,34 @@ class Player {
             _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
         }
 
-        std::array<sf::Vector2f, 2> calc_width_vertex(sf::Vector2f position, float radiansDirection, float width);
-
+        //General Methods
         void draw(sf::RenderWindow& window);
+        void update();
+        void add_move_to_buffer(const MovementDirection move);
+        void move_player(MovementDirection direction);
 
+        //Getter Methods
         sf::Vector2f get_position() const;
         sf::Vector2u get_position_grid() const;
         sf::Vector2f get_head_center() const;
-
         MovementDirection  get_move_direction() const;
 
-        void update();
-
-        void add_move_to_buffer(const MovementDirection move);
-
-        void move_player(MovementDirection direction);
     private:
-        sf::Vector2u _headpos;
-        MovementDirection get_opposite(MovementDirection direction);
-        std::vector<sf::Vector2u> _tailPosList;
-        int _delayCounter;
+        //General Variables
         const float _bodyWidth;
-        bool _removingTail;
-        sf::CircleShape _head;
-        std::deque<sf::Vertex> _stripPositions;
-        std::queue<MovementDirection> _inputBuffer;
-        sf::VertexArray _tailStrip;
-        std::optional<MovementDirection> get_next_direction();
         const Grid& _gameGrid;
+        sf::CircleShape _head;
+        sf::Vector2u _headpos;
+        std::queue<MovementDirection> _inputBuffer;
+
+        //Tail Variables
+        std::vector<sf::Vector2u> _tailPosList;
+        std::deque<sf::Vertex> _stripPositions;
+        sf::VertexArray _tailStrip;
+        MovementDirection get_opposite(MovementDirection direction);
+        
+        //Methods
+        std::optional<MovementDirection> get_next_direction();
+        std::array<sf::Vector2f, 2> calc_width_vertex(sf::Vector2f position, float radiansDirection, float width);
         void update_tail();
 };
