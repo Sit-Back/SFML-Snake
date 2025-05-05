@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-const float GRID_SIZE = 10.f;
-
 class Grid {
     public:
         const sf::Vector2u _dimensions;

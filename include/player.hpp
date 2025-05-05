@@ -60,6 +60,7 @@ class Player {
         void move_player(MovementDirection direction);
     private:
         sf::Vector2u _headpos;
+        MovementDirection get_opposite(MovementDirection direction);
         std::vector<sf::Vector2u> _tailPosList;
         int _delayCounter;
         const float _bodyWidth;

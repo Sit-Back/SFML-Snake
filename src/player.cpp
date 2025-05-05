@@ -83,9 +83,31 @@ void Player::update() {
 } 
 
 void Player::add_move_to_buffer(const MovementDirection move) {
-    if ((_inputBuffer.empty() || _inputBuffer.back() != move) 
-        && _inputBuffer.size() < MOVE_QUEUE_SIZE) 
-    {_inputBuffer.push(move);}
+    if (
+        (
+            (_inputBuffer.empty() && _direction != move && _direction != get_opposite(move)) 
+            || (_inputBuffer.back() != move && _inputBuffer.back() != get_opposite(move))
+        ) 
+        && _inputBuffer.size() < MOVE_QUEUE_SIZE
+    ) 
+    {
+        _inputBuffer.push(move);
+    }
+}
+
+MovementDirection Player::get_opposite(MovementDirection direction) {
+    switch (direction) {
+        case (MovementDirection::UP):
+            return MovementDirection::DOWN;
+        case (MovementDirection::DOWN):
+            return MovementDirection::UP;
+        case (MovementDirection::LEFT):
+            return MovementDirection::RIGHT;
+        case (MovementDirection::RIGHT):
+            return MovementDirection::LEFT;
+    }
+
+    throw std::invalid_argument("Invalid direction supplied");
 }
 
 float direction_to_radian(MovementDirection direction) {
@@ -110,7 +132,9 @@ float direction_to_radian(MovementDirection direction) {
 void Player::move_player(MovementDirection direction) {
     switch (direction) {
         case (MovementDirection::UP):
-            _headpos.y -= 1;
+            if (_headpos.y > 0) {
+                _headpos.y -= 1;
+            }
             break;
         case (MovementDirection::DOWN):
             if (_headpos.y < _gameGrid._dimensions.y-1) {
@@ -118,7 +142,9 @@ void Player::move_player(MovementDirection direction) {
             }
             break;
         case (MovementDirection::LEFT):
-            _headpos.x -= 1;
+            if (_headpos.x > 0) {
+                _headpos.x -= 1;
+            }
             break;
         case (MovementDirection::RIGHT):
             if (_headpos.x < _gameGrid._dimensions.x-1) {
