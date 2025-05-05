@@ -112,3 +112,46 @@ sf::VertexArray Grid::get_verticies() const {
 sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position) const {
     return _gridPositionsMatrix.at(position.y).at(position.x);
 }
+
+sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position, Grid::SquareLocation location_in_square ) const {
+    sf::Vector2f coords = _gridPositionsMatrix.at(position.y).at(position.x);
+    switch (location_in_square)
+    {
+    case Grid::SquareLocation::TOP_LEFT:
+        return coords;
+        break;
+    case Grid::SquareLocation::TOP_RIGHT:
+        coords.x += _size;
+        return coords;
+        break;
+    case Grid::SquareLocation::BOTTOM_LEFT:
+        coords.y += _size;
+        return coords;
+        break;
+    case Grid::SquareLocation::BOTTOM_RIGHT:
+        coords.x += _size;
+        coords.y += _size;
+        return coords;
+        break;
+    case Grid::SquareLocation::TOP:
+        coords.x += _size/2;
+        return coords;
+        break;
+    case Grid::SquareLocation::BOTTOM:
+        coords.x += _size/2;
+        coords.y += _size;
+        return coords;
+        break;
+    case Grid::SquareLocation::LEFT:
+        coords.y += _size/2;
+        return coords;
+        break;
+    case Grid::SquareLocation::RIGHT:
+        coords.x += _size;
+        coords.y += _size/2;
+        return coords;
+        break;
+    }
+
+    throw std::invalid_argument("Invalid location in square.");
+}

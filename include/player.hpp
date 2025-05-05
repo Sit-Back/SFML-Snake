@@ -49,11 +49,13 @@ class Player {
         std::queue<Direction> _inputBuffer;
 
         //Tail Variables
-        std::vector<sf::Vector2u> _tailPosList;
+        std::deque<sf::Vector2u> _turnPosList;
         sf::VertexArray _tailStrip;
         
         //Methods
         std::optional<Direction> get_next_direction();
-        std::array<sf::Vector2f, 2> calc_width_vertex(sf::Vector2f position, float radiansDirection, float width);
+        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, float radiansDirection, float width);
+        Grid::SquareLocation get_square_location_for_search_dir(Direction search_dir);
+        void add_verticies(std::vector<sf::Vector2f> points);
         void update_tail();
 };

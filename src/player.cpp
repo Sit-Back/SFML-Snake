@@ -9,9 +9,10 @@
 void Player::update() {
     if (!_inputBuffer.empty()) {
         _direction = *get_next_direction();
+        sf::Vector2u prevHeadPos = _headPos;
         move_player(_direction);
         update_tail();
-        _tailPosList.push_back(_headPos);
+        _turnPosList.push_front(prevHeadPos);
     } else {
         move_player(_direction);
         update_tail();
@@ -19,14 +20,47 @@ void Player::update() {
 } 
 
 void Player::update_tail() {
+    sf::Vector2u currentSearchPos = _headPos;
+    std::cout << _headPos.x << " " << _headPos.y << '\n';
     _tailStrip.clear();
-    std::deque<sf::Vertex> stripPositions;
-    std::array<sf::Vector2f, 2> points = calc_width_vertex(_gameGrid.grid_pos_coords(_headPos), direction_to_radian(_direction), _bodyWidth/2-1);
-    _tailStrip.append(sf::Vertex({points[0], PLAYER_COLOR}));
-    _tailStrip.append(sf::Vertex({points[1], PLAYER_COLOR}));
+    add_verticies(calc_width_vertex(_gameGrid.grid_pos_coords(_headPos), direction_to_radian(_direction), _bodyWidth/2-1));
+
+    int corner_index = 0;
+    while (corner_index < _turnPosList.size()) {
+        //std::cout << _turnPosList[corner_index].x << " " << _turnPosList[corner_index].y << '\n';
+        corner_index++;
+    }
+    //std::cout << "--------------\n";
+
+}
+
+void Player::add_verticies(std::vector<sf::Vector2f> points) {
+    for (int i = 0; i < points.size(); i++) {
+        _tailStrip.append(sf::Vertex({points[i], PLAYER_COLOR}));
+    }
 }
 
 //Support Functions
+Grid::SquareLocation Player::get_square_location_for_search_dir(Direction search_dir) {
+    switch (search_dir)
+    {
+    case Direction::LEFT:
+        return Grid::SquareLocation::RIGHT;
+        break;
+    case Direction::RIGHT:
+        return Grid::SquareLocation::LEFT;
+        break;
+    case Direction::UP:
+        return Grid::SquareLocation::BOTTOM;
+        break;
+    case Direction::DOWN:
+        return Grid::SquareLocation::TOP;
+        break;
+    }
+
+    throw std::invalid_argument("Invalid Direction");
+}
+
 std::optional<Direction> Player::get_next_direction() {
     if (_inputBuffer.size() > 0) {
         Direction direction = _inputBuffer.front();
@@ -63,7 +97,7 @@ Direction Player::get_move_direction() const {
     return _direction;
 }
 
-std::array<sf::Vector2f, 2> Player::calc_width_vertex(sf::Vector2f position, float radiansDirection, float width) {
+std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, float radiansDirection, float width) {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
     initialVector.x = width*cos(radiansDirection);
@@ -77,7 +111,7 @@ std::array<sf::Vector2f, 2> Player::calc_width_vertex(sf::Vector2f position, flo
     sf::Vector2f pos1{position.x + rotation1.x, position.y + rotation1.y};
     sf::Vector2f pos2{position.x + rotation2.x, position.y + rotation2.y};
 
-    return std::array<sf::Vector2f, 2>{pos1, pos2};
+    return std::vector<sf::Vector2f>{pos1, pos2};
 }
 
 void Player::add_move_to_buffer(const Direction move) {

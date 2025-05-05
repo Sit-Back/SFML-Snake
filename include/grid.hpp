@@ -14,8 +14,20 @@ Direction get_opposite(Direction direction);
 float direction_to_radian(Direction direction);
 sf::Vector2f direction_to_vector(Direction direction, float magnitude);
 
+
 class Grid {
     public:
+        enum class SquareLocation {
+            TOP_LEFT,
+            TOP_RIGHT,
+            BOTTOM_LEFT,
+            BOTTOM_RIGHT,
+            TOP,
+            BOTTOM,
+            LEFT,
+            RIGHT
+        };
+
         const sf::Vector2u _dimensions;
         const float _size;
 
@@ -23,6 +35,7 @@ class Grid {
     
         sf::VertexArray get_verticies() const;
         sf::Vector2f grid_pos_coords(sf::Vector2u position) const;
+        sf::Vector2f grid_pos_coords(sf::Vector2u position, Grid::SquareLocation location_in_square ) const;
     private:
         sf::VertexArray _gridVerticies;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
