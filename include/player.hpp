@@ -32,7 +32,6 @@ class Player {
         void draw(sf::RenderWindow& window);
         void update();
         void add_move_to_buffer(const Direction move);
-        void move_player(Direction direction);
 
         //Getter Methods
         sf::Vector2f get_position() const;

@@ -155,3 +155,28 @@ sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position, Grid::SquareLocation l
 
     throw std::invalid_argument("Invalid location in square.");
 }
+
+void Grid::move_entity(sf::Vector2u& entity, Direction direction) const {
+    switch (direction) {
+        case (Direction::UP):
+            if (entity.y > 0) {
+                entity.y -= 1;
+            }
+            break;
+        case (Direction::DOWN):
+            if (entity.y < _dimensions.y-1) {
+                entity.y += 1;
+            }
+            break;
+        case (Direction::LEFT):
+            if (entity.x > 0) {
+                entity.x -= 1;
+            }
+            break;
+        case (Direction::RIGHT):
+            if (entity.x < _dimensions.x-1) {
+                entity.x += 1;
+            }
+            break;
+    }
+}

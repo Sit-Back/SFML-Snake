@@ -10,23 +10,25 @@ void Player::update() {
     if (!_inputBuffer.empty()) {
         _direction = *get_next_direction();
         sf::Vector2u prevHeadPos = _headPos;
-        move_player(_direction);
+        _gameGrid.move_entity(_headPos, _direction);
+        _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
         update_tail();
         _turnPosList.push_front(prevHeadPos);
     } else {
-        move_player(_direction);
+        _gameGrid.move_entity(_headPos, _direction);
+        _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
         update_tail();
     }
 } 
 
 void Player::update_tail() {
     sf::Vector2u currentSearchPos = _headPos;
-    std::cout << _headPos.x << " " << _headPos.y << '\n';
     _tailStrip.clear();
     add_verticies(calc_width_vertex(_gameGrid.grid_pos_coords(_headPos), direction_to_radian(_direction), _bodyWidth/2-1));
 
     int corner_index = 0;
     while (corner_index < _turnPosList.size()) {
+        
         //std::cout << _turnPosList[corner_index].x << " " << _turnPosList[corner_index].y << '\n';
         corner_index++;
     }
@@ -115,41 +117,13 @@ std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, float
 }
 
 void Player::add_move_to_buffer(const Direction move) {
-    if (
-        (
-            (_inputBuffer.empty() && _direction != move && _direction != get_opposite(move)) 
-            || (_inputBuffer.back() != move && _inputBuffer.back() != get_opposite(move))
-        ) 
-        && _inputBuffer.size() < MOVE_QUEUE_SIZE
-    ) 
-    {
-        _inputBuffer.push(move);
+    if (_inputBuffer.size() < MOVE_QUEUE_SIZE) {
+        if (_inputBuffer.empty()) {
+            if (_direction != move && _direction != get_opposite(move)) {
+                _inputBuffer.push(move);
+            }
+        } else if (_inputBuffer.back() != move && _inputBuffer.back() != get_opposite(move)) {
+            _inputBuffer.push(move);
+        }
     }
-}
-
-void Player::move_player(Direction direction) {
-    switch (direction) {
-        case (Direction::UP):
-            if (_headPos.y > 0) {
-                _headPos.y -= 1;
-            }
-            break;
-        case (Direction::DOWN):
-            if (_headPos.y < _gameGrid._dimensions.y-1) {
-                _headPos.y += 1;
-            }
-            break;
-        case (Direction::LEFT):
-            if (_headPos.x > 0) {
-                _headPos.x -= 1;
-            }
-            break;
-        case (Direction::RIGHT):
-            if (_headPos.x < _gameGrid._dimensions.x-1) {
-                _headPos.x += 1;
-            }
-            break;
-    }
-
-    _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
 }

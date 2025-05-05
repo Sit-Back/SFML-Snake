@@ -36,6 +36,7 @@ class Grid {
         sf::VertexArray get_verticies() const;
         sf::Vector2f grid_pos_coords(sf::Vector2u position) const;
         sf::Vector2f grid_pos_coords(sf::Vector2u position, Grid::SquareLocation location_in_square ) const;
+        void move_entity(sf::Vector2u& entity, Direction direction) const;
     private:
         sf::VertexArray _gridVerticies;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
