@@ -122,11 +122,12 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         sf::Vector2f pointPosition = {origin.x + run, origin.y + rise};
         double perpanGradient = -run/rise;
         sf::Angle angle = sf::radians(atan(perpanGradient));
+        angle = initialDirection == Direction::LEFT || finalDirection == Direction::LEFT ? angle - sf::radians(M_PI) : angle;
 
         std::vector<sf::Vector2f> verticies = calc_width_vertex(pointPosition, angle, _bodyWidth-1);
-        circleVertices.push_back(verticies[1]);
         circleVertices.push_back(verticies[0]);
-    }
+        circleVertices.push_back(verticies[1]);
+      }
 
     return circleVertices;
 }

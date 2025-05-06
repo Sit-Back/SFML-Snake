@@ -10,7 +10,7 @@ const int MOVE_QUEUE_SIZE = 2;
 const sf::Color PLAYER_COLOR(245, 66, 129);
 const int TAIL_UPDATE_DELAY = 5;
 const int TURN_RESOLUTION = 5;
-const int PLAYER_LENGTH = 20;
+const int PLAYER_LENGTH = 6;
 
 class Player {
     public: 
