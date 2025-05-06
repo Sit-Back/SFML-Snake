@@ -152,6 +152,11 @@ sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position, Grid::SquareLocation l
         coords.y += _size/2;
         return coords;
         break;
+    case Grid::SquareLocation::CENTER:
+        coords.x += _size/2;
+        coords.y += _size/2;
+        return coords;
+        break;
     }
 
     throw std::invalid_argument("Invalid location in square.");

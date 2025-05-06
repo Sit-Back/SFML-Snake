@@ -25,7 +25,8 @@ class Grid {
             TOP,
             BOTTOM,
             LEFT,
-            RIGHT
+            RIGHT,
+            CENTER
         };
 
         const sf::Vector2u _dimensions;
