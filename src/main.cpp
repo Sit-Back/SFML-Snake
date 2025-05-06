@@ -24,14 +24,13 @@ int main()
     window.setView(gridView);
 
     Grid game_grid = Grid(sf::Vector2u{15, 15}, GRID_SIZE);
-    Player player(game_grid, GRID_SIZE); 
+    Player player(game_grid); 
     sf::Clock timer;
 
     while (window.isOpen())
     {
         while (const  std::optional<sf::Event> event = window.pollEvent())
         {
-            // "close requested" event: we close the window
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             } else if (const auto* keypressed_data = event->getIf<sf::Event::KeyPressed>()) {

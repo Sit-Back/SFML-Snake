@@ -5,12 +5,11 @@
 #include <deque>
 #include "grid.hpp"
 
-const float MOVEMENT_SPEED = 1.f;
 const int MOVE_QUEUE_SIZE = 2;
 const sf::Color PLAYER_COLOR(245, 66, 129);
-const int TAIL_UPDATE_DELAY = 5;
-const int TURN_RESOLUTION = 5;
-const int PLAYER_LENGTH = 6;
+const int TURN_RESOLUTION = 10;
+const int INITIAL_PLAYER_LENGTH = 4;
+const float PLAYER_WIDTH = 40;
 
 class Player {
     public: 
@@ -19,17 +18,18 @@ class Player {
         int _length;
 
         //Constructors
-        Player(const Grid& gameGrid, float bodyWidth) : _bodyWidth(bodyWidth), _gameGrid(gameGrid){
+        Player(const Grid& gameGrid) : _gameGrid(gameGrid) {
             _headPos = {11, 5};
             _turnPosList.push_front(_headPos);
-            _length = PLAYER_LENGTH;
+            _length = INITIAL_PLAYER_LENGTH;
 
-            _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
-            _head.setRadius(_bodyWidth/2);
+            _head.setPosition(_gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER));
+            _head.setRadius(PLAYER_WIDTH/2);
             _head.setFillColor(PLAYER_COLOR);
-            _end.setRadius(_bodyWidth/2);
+            _head.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
+            _end.setRadius(PLAYER_WIDTH/2);
             _end.setFillColor(PLAYER_COLOR);
-            _end.setOrigin({_bodyWidth/2, _bodyWidth/2});
+            _end.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
 
             _direction = Direction::RIGHT;
 
@@ -50,7 +50,6 @@ class Player {
 
     private:
         //General Variables
-        const float _bodyWidth;
         const Grid& _gameGrid;
         sf::CircleShape _head;
         sf::CircleShape _end;
@@ -63,7 +62,7 @@ class Player {
         
         //Methods
         std::optional<Direction> get_next_direction();
-        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle, const float width) const;
+        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle) const;
         Grid::SquareLocation travel_entry(const Direction search_dir) const;
         std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalPosition) const;
         void add_verticies(std::vector<sf::Vector2f> points);

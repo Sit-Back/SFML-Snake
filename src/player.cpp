@@ -11,21 +11,18 @@ void Player::update() {
     if (!_inputBuffer.empty()) {
         _direction = *get_next_direction();
         _turnPosList.push_front(_headPos);
-        _gameGrid.move_entity(_headPos, _direction);
-        _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
-        update_tail();
-    } else {
-        _gameGrid.move_entity(_headPos, _direction);
-        _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
-        update_tail();
     }
+
+    _gameGrid.move_entity(_headPos, _direction);
+    _head.setPosition(_gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER));
+    update_tail();
 } 
 
 void Player::update_tail() {
     sf::Vector2u currentSearchPos = _headPos;
     Direction searchDirection = get_opposite(_direction);
     _tailStrip.clear();
-    add_verticies(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection), _bodyWidth-1));
+    add_verticies(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection)));
 
     int corner_index = 0;
     int traversed_squares = 0;
@@ -39,11 +36,11 @@ void Player::update_tail() {
 
         _gameGrid.move_entity(currentSearchPos, searchDirection);
         sf::Vector2f vertexOrigin = _gameGrid.grid_pos_coords(currentSearchPos, travel_entry(searchDirection));
-        add_verticies(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection), _bodyWidth-1));
+        add_verticies(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;
     }
     sf::Vector2f endPos = _gameGrid.grid_pos_coords(currentSearchPos, Grid::SquareLocation::CENTER);
-    add_verticies(calc_width_vertex(endPos, direction_to_angle(searchDirection), _bodyWidth-1));
+    add_verticies(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
     _end.setPosition(endPos);
 }
  
@@ -127,7 +124,7 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         sf::Angle angle = sf::radians(atan(perpanGradient));
         angle = initialDirection == Direction::LEFT || finalDirection == Direction::LEFT ? angle - sf::radians(M_PI) : angle;
 
-        std::vector<sf::Vector2f> verticies = calc_width_vertex(pointPosition, angle, _bodyWidth-1);
+        std::vector<sf::Vector2f> verticies = calc_width_vertex(pointPosition, angle);
         circleVertices.push_back(verticies[0]);
         circleVertices.push_back(verticies[1]);
       }
@@ -163,22 +160,18 @@ sf::Vector2u Player::get_position_grid() const {
 }
 
 sf::Vector2f Player::get_head_center() const {
-    sf::Vector2f headCenter;
-    headCenter.x = get_position().x + _bodyWidth/2;
-    headCenter.y = get_position().y + _bodyWidth/2;
-
-    return headCenter;
+    return _gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER);
 }
 
 Direction Player::get_move_direction() const {
     return _direction;
 }
 
-std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, sf::Angle angle, const float width) const {
+std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, sf::Angle angle) const {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
-    initialVector.x = width/2*cos(angle.asRadians());
-    initialVector.y = width/2*sin(angle.asRadians());
+    initialVector.x = PLAYER_WIDTH/2*cos(angle.asRadians());
+    initialVector.y = PLAYER_WIDTH/2*sin(angle.asRadians());
 
     //Rotate the initial vector to both sides
     sf::Vector2f rotation1 = rotate_vector(initialVector, sf::radians(M_PI_2));
