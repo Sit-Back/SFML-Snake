@@ -29,7 +29,7 @@ void Player::update_tail() {
 
     int corner_index = 0;
     int traversed_squares = 0;
-    while (traversed_squares < _length) {
+    while (traversed_squares < _length-1) {
         if (_turnPosList.size() > corner_index + 1 && currentSearchPos == _turnPosList[corner_index]) {
             Direction initialDirection = searchDirection;
             searchDirection = get_direction_to(currentSearchPos, _turnPosList[corner_index+1]);
@@ -42,6 +42,9 @@ void Player::update_tail() {
         add_verticies(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection), _bodyWidth-1));
         traversed_squares++;
     }
+    sf::Vector2f endPos = _gameGrid.grid_pos_coords(currentSearchPos, Grid::SquareLocation::CENTER);
+    add_verticies(calc_width_vertex(endPos, direction_to_angle(searchDirection), _bodyWidth-1));
+    _end.setPosition(endPos);
 }
  
 //Support Functions
@@ -147,6 +150,7 @@ std::optional<Direction> Player::get_next_direction() {
 
 void Player::draw(sf::RenderWindow& window) {
     window.draw(_head);
+    window.draw(_end);
     window.draw(_tailStrip);
 }
 

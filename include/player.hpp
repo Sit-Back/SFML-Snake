@@ -27,6 +27,9 @@ class Player {
             _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
             _head.setRadius(_bodyWidth/2);
             _head.setFillColor(PLAYER_COLOR);
+            _end.setRadius(_bodyWidth/2);
+            _end.setFillColor(PLAYER_COLOR);
+            _end.setOrigin({_bodyWidth/2, _bodyWidth/2});
 
             _direction = Direction::RIGHT;
 
@@ -50,6 +53,7 @@ class Player {
         const float _bodyWidth;
         const Grid& _gameGrid;
         sf::CircleShape _head;
+        sf::CircleShape _end;
         sf::Vector2u _headPos;
         std::queue<Direction> _inputBuffer;
 
