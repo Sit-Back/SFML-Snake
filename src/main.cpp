@@ -5,8 +5,9 @@
 #include "grid.hpp"
 #include "player.hpp"
 #include "utility.hpp"
+#include "fruit.hpp"
 
-const float UPDATE_RATE = 0.2f;
+const float UPDATE_RATE = 0.15f;
 const float GRID_SIZE = 800.0/15.0;
 
 int main()
