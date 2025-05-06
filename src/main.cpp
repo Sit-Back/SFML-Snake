@@ -6,7 +6,7 @@
 #include "player.hpp"
 #include "utility.hpp"
 
-const float UPDATE_RATE = 0.3f;
+const float UPDATE_RATE = 0.2f;
 const float GRID_SIZE = 800.0/15.0;
 
 int main()
