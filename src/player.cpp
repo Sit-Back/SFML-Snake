@@ -117,7 +117,7 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         origin = _gameGrid.grid_pos_coords(initialPos, potentialOrigin[1]);
     }
 
-    for (int i = 1; i < TURN_RESOLUTION; i++) {
+    for (int i = 1; i < TURN_RESOLUTION + 1; i++) {
         sf::Angle currentAngle = initialAngle + i*(differenceAngle/(TURN_RESOLUTION+1));
         float rise = (_gameGrid._size/2)*sin(currentAngle.asRadians());
         float run = (_gameGrid._size/2)*cos(currentAngle.asRadians());
