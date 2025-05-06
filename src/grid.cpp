@@ -186,3 +186,10 @@ void Grid::move_entity(sf::Vector2u& entity, Direction direction) const {
             break;
     }
 }
+
+float Grid::get_square_size() const {
+    return _size;
+}
+sf::Vector2u Grid::get_dimensions() const {
+    return _dimensions;
+}

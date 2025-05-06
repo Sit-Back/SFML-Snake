@@ -29,16 +29,17 @@ class Grid {
             CENTER
         };
 
-        const sf::Vector2u _dimensions;
-        const float _size;
-
         Grid(sf::Vector2u dimensions, float size);
     
         sf::VertexArray get_verticies() const;
         sf::Vector2f grid_pos_coords(sf::Vector2u position) const;
         sf::Vector2f grid_pos_coords(sf::Vector2u position, Grid::SquareLocation location_in_square ) const;
         void move_entity(sf::Vector2u& entity, Direction direction) const;
+        float get_square_size() const;
+        sf::Vector2u get_dimensions() const;
     private:
+        const sf::Vector2u _dimensions;
+        const float _size;
         sf::VertexArray _gridVerticies;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
 };
