@@ -11,7 +11,7 @@ enum class Direction {
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid);
 Direction get_opposite(Direction direction);
-float direction_to_radian(Direction direction);
+sf::Angle direction_to_angle(Direction direction);
 sf::Vector2f direction_to_vector(Direction direction, float magnitude);
 
 

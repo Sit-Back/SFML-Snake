@@ -1,4 +1,5 @@
 #include "grid.hpp"
+#include <SFML/Graphics.hpp>
 #include <cmath>
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
@@ -41,23 +42,23 @@ sf::Vector2f direction_to_vector(Direction direction, float magnitude) {
     throw std::invalid_argument("Invalid direction supplied");
 }
 
-float direction_to_radian(Direction direction) {
+sf::Angle direction_to_angle(Direction direction) {
     switch (direction) {
         case Direction::UP:
-            return -M_PI_2;
+            return sf::radians(-M_PI_2);
             break;
         case Direction::DOWN:
-            return M_PI_2;
+            return sf::radians(M_PI_2);
             break;
         case Direction::LEFT:
-            return M_PI;
+            return sf::radians(M_PI);
             break;
         case Direction::RIGHT:
-            return 0.f;
+            return sf::radians(0.f);
             break;
     }
 
-    return 0;
+    return sf::Angle();
 }
 
 Grid::Grid(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {

@@ -9,7 +9,8 @@ const float MOVEMENT_SPEED = 1.f;
 const int MOVE_QUEUE_SIZE = 2;
 const sf::Color PLAYER_COLOR(245, 66, 129);
 const int TAIL_UPDATE_DELAY = 5;
-const int TURN_RESOLUTION = 3;
+const int TURN_RESOLUTION = 5;
+const int PLAYER_LENGTH = 20;
 
 class Player {
     public: 
@@ -21,7 +22,7 @@ class Player {
         Player(const Grid& gameGrid, float bodyWidth) : _bodyWidth(bodyWidth), _gameGrid(gameGrid){
             _headPos = {11, 5};
             _turnPosList.push_front(_headPos);
-            _length = 10;
+            _length = PLAYER_LENGTH;
 
             _head.setPosition(_gameGrid.grid_pos_coords(_headPos));
             _head.setRadius(_bodyWidth/2);
@@ -58,8 +59,9 @@ class Player {
         
         //Methods
         std::optional<Direction> get_next_direction();
-        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, float radiansDirection, const float width) const;
-        Grid::SquareLocation get_square_location_for_search_dir(const Direction search_dir) const ;
+        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle, const float width) const;
+        Grid::SquareLocation travel_entry(const Direction search_dir) const;
+        std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalPosition) const;
         void add_verticies(std::vector<sf::Vector2f> points);
         void update_tail();
 };
