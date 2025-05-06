@@ -6,6 +6,25 @@
 #include "grid.hpp"
 #include "utility.hpp"
 
+Player::Player(const Grid& gameGrid) : _gameGrid(gameGrid) {
+    _headPos = {11, 5};
+    _turnPosList.push_front(_headPos);
+    _length = INITIAL_PLAYER_LENGTH;
+
+    _head.setPosition(_gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER));
+    _head.setRadius(PLAYER_WIDTH/2);
+    _head.setFillColor(PLAYER_COLOR);
+    _head.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
+    _end.setRadius(PLAYER_WIDTH/2);
+    _end.setFillColor(PLAYER_COLOR);
+    _end.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
+
+    _direction = Direction::RIGHT;
+
+    _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+    update_tail();
+}
+
 //Main Updates
 void Player::update() {
     if (!_inputBuffer.empty()) {
