@@ -2,7 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
-#include "grid.hpp"
+#include "world.hpp"
 #include "player.hpp"
 #include "utility.hpp"
 #include "fruit.hpp"
@@ -17,17 +17,18 @@ int main()
         "Snake Game",
          sf::Style::Titlebar | sf::Style::Close
     );
-    
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
-
     sf::View gridView(sf::FloatRect({0,0},{800, 800}));
     window.setView(gridView);
 
-    Grid game_grid = Grid(sf::Vector2u{15, 15}, GRID_SIZE);
-    Player player(game_grid); 
-    sf::Clock timer;
+    World game_grid = World(sf::Vector2u{15, 15}, GRID_SIZE);
 
+    sf::Texture eyeTexture = load_texture("eyes.png");
+    eyeTexture.setSmooth(true);
+    Player player(game_grid, eyeTexture);
+
+    sf::Clock timer;
     while (window.isOpen())
     {
         while (const  std::optional<sf::Event> event = window.pollEvent())
@@ -56,6 +57,7 @@ int main()
         }
 
         if (timer.getElapsedTime().asSeconds() > UPDATE_RATE) {
+            game_grid.create_fruit();
             player.update();
             timer.restart();
         }
@@ -63,6 +65,7 @@ int main()
         window.clear(sf::Color::Black);
         window.draw(game_grid.get_verticies());
         player.draw(window);
+        game_grid.draw_fruit(window);
         window.display();
     }
 }

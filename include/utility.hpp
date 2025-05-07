@@ -4,8 +4,7 @@
 #include <string>
 #include <filesystem>
 
-const std::filesystem::path ASSET_PATH_DEV("../assets");
-const std::filesystem::path ASSET_PATH_RELEASE("assets");
+const std::filesystem::path ASSET_PATH("assets");
 
 sf::Texture load_texture(std::string filename);
 

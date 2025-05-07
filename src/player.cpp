@@ -3,25 +3,35 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "player.hpp"
-#include "grid.hpp"
+#include "world.hpp"
 #include "utility.hpp"
 
-Player::Player(const Grid& gameGrid) : _gameGrid(gameGrid) {
+Player::Player(World& gameGrid, sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
     _headPos = {11, 5};
     _turnPosList.push_front(_headPos);
     _length = INITIAL_PLAYER_LENGTH;
+    _direction = Direction::RIGHT;
 
-    _head.setPosition(_gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER));
+    // Head
+    _head.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
+    _head.setPosition(get_head_center());
     _head.setRadius(PLAYER_WIDTH/2);
     _head.setFillColor(PLAYER_COLOR);
-    _head.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
+    sf::Vector2f eyeBounds = _eyeSprite.getLocalBounds().size;
+    float eyeScalex = (PLAYER_WIDTH + PLAYER_WIDTH/3)/eyeTexture.getSize().x;
+    float eyeScaley = (PLAYER_WIDTH + PLAYER_WIDTH/3)/eyeTexture.getSize().y;
+    sf::Vector2f eyeScale = {eyeScalex, eyeScaley};
+    _eyeSprite.setOrigin({eyeBounds.x/2, eyeBounds.y/2});
+    _eyeSprite.scale(eyeScale);
+    _eyeSprite.setPosition(get_head_center());
+    _eyeSprite.setRotation(direction_to_angle(_direction));
+
+    // Tail
+    _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
     _end.setRadius(PLAYER_WIDTH/2);
     _end.setFillColor(PLAYER_COLOR);
     _end.setOrigin({PLAYER_WIDTH/2, PLAYER_WIDTH/2});
 
-    _direction = Direction::RIGHT;
-
-    _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
     update_tail();
 }
 
@@ -33,7 +43,17 @@ void Player::update() {
     }
 
     _gameGrid.move_entity(_headPos, _direction);
-    _head.setPosition(_gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER));
+    _head.setPosition(get_head_center());
+    _eyeSprite.setPosition(get_head_center());
+    _eyeSprite.setRotation(direction_to_angle(_direction));
+
+    for (int i = 0; i < _gameGrid.get_fruit_list().size(); i++) {
+        if (_headPos == _gameGrid.get_fruit_list().at(i).get_pos()) {
+            _length++;
+            _gameGrid.destroy_fruit_index(i);
+        }
+    }
+
     update_tail();
 } 
 
@@ -58,26 +78,26 @@ void Player::update_tail() {
         add_verticies(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;
     }
-    sf::Vector2f endPos = _gameGrid.grid_pos_coords(currentSearchPos, Grid::SquareLocation::CENTER);
+    sf::Vector2f endPos = _gameGrid.grid_pos_coords(currentSearchPos, World::SquareLocation::CENTER);
     add_verticies(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
     _end.setPosition(endPos);
 }
  
 //Support Functions
-Grid::SquareLocation Player::travel_entry(const Direction search_dir) const {
+World::SquareLocation Player::travel_entry(const Direction search_dir) const {
     switch (search_dir)
     {
     case Direction::LEFT:
-        return Grid::SquareLocation::RIGHT;
+        return World::SquareLocation::RIGHT;
         break;
     case Direction::RIGHT:
-        return Grid::SquareLocation::LEFT;
+        return World::SquareLocation::LEFT;
         break;
     case Direction::UP:
-        return Grid::SquareLocation::BOTTOM;
+        return World::SquareLocation::BOTTOM;
         break;
     case Direction::DOWN:
-        return Grid::SquareLocation::TOP;
+        return World::SquareLocation::TOP;
         break;
     }
 
@@ -96,24 +116,24 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
     differenceAngle = differenceAngle.wrapSigned();
 
     
-    Grid::SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
+    World::SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
     switch (initialDirection)
     {
         case Direction::RIGHT:
-            potentialOrigin[0] = Grid::SquareLocation::TOP_LEFT;
-            potentialOrigin[1] = Grid::SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[0] = World::SquareLocation::TOP_LEFT;
+            potentialOrigin[1] = World::SquareLocation::BOTTOM_LEFT;
             break;
         case Direction::LEFT:
-            potentialOrigin[0] = Grid::SquareLocation::BOTTOM_RIGHT;
-            potentialOrigin[1] = Grid::SquareLocation::TOP_RIGHT;
+            potentialOrigin[0] = World::SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[1] = World::SquareLocation::TOP_RIGHT;
             break;
         case Direction::UP:
-            potentialOrigin[0] = Grid::SquareLocation::BOTTOM_LEFT;
-            potentialOrigin[1] = Grid::SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[0] = World::SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[1] = World::SquareLocation::BOTTOM_RIGHT;
             break;
         case Direction::DOWN:
-            potentialOrigin[0] = Grid::SquareLocation::TOP_RIGHT;
-            potentialOrigin[1] = Grid::SquareLocation::TOP_LEFT; 
+            potentialOrigin[0] = World::SquareLocation::TOP_RIGHT;
+            potentialOrigin[1] = World::SquareLocation::TOP_LEFT; 
             break;
         default:
             throw std::invalid_argument("Invalid direction.");
@@ -168,6 +188,7 @@ void Player::draw(sf::RenderWindow& window) {
     window.draw(_head);
     window.draw(_end);
     window.draw(_tailStrip);
+    window.draw(_eyeSprite);
 }
 
 sf::Vector2f Player::get_position() const {
@@ -179,7 +200,7 @@ sf::Vector2u Player::get_position_grid() const {
 }
 
 sf::Vector2f Player::get_head_center() const {
-    return _gameGrid.grid_pos_coords(_headPos, Grid::SquareLocation::CENTER);
+    return _gameGrid.grid_pos_coords(_headPos, World::SquareLocation::CENTER);
 }
 
 Direction Player::get_move_direction() const {

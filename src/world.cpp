@@ -1,6 +1,7 @@
-#include "grid.hpp"
+#include "world.hpp"
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <algorithm>
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
     sf::Vector2i difference(final_grid.x - initial_grid.x, final_grid.y - initial_grid.y);
@@ -61,7 +62,8 @@ sf::Angle direction_to_angle(Direction direction) {
     return sf::Angle();
 }
 
-Grid::Grid(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
+World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
+    _fruitTexture = load_texture("apple.png");
     int square_counter = 0;
     sf::Color square_color;
 
@@ -106,53 +108,53 @@ Grid::Grid(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimen
     }
 }
 
-sf::VertexArray Grid::get_verticies() const {
+sf::VertexArray World::get_verticies() const {
     return _gridVerticies;
 }
 
-sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position) const {
+sf::Vector2f World::grid_pos_coords(sf::Vector2u position) const {
     return _gridPositionsMatrix.at(position.y).at(position.x);
 }
 
-sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position, Grid::SquareLocation location_in_square ) const {
+sf::Vector2f World::grid_pos_coords(sf::Vector2u position, World::SquareLocation location_in_square ) const {
     sf::Vector2f coords = _gridPositionsMatrix.at(position.y).at(position.x);
     switch (location_in_square)
     {
-    case Grid::SquareLocation::TOP_LEFT:
+    case World::SquareLocation::TOP_LEFT:
         return coords;
         break;
-    case Grid::SquareLocation::TOP_RIGHT:
+    case World::SquareLocation::TOP_RIGHT:
         coords.x += _size;
         return coords;
         break;
-    case Grid::SquareLocation::BOTTOM_LEFT:
+    case World::SquareLocation::BOTTOM_LEFT:
         coords.y += _size;
         return coords;
         break;
-    case Grid::SquareLocation::BOTTOM_RIGHT:
+    case World::SquareLocation::BOTTOM_RIGHT:
         coords.x += _size;
         coords.y += _size;
         return coords;
         break;
-    case Grid::SquareLocation::TOP:
+    case World::SquareLocation::TOP:
         coords.x += _size/2;
         return coords;
         break;
-    case Grid::SquareLocation::BOTTOM:
+    case World::SquareLocation::BOTTOM:
         coords.x += _size/2;
         coords.y += _size;
         return coords;
         break;
-    case Grid::SquareLocation::LEFT:
+    case World::SquareLocation::LEFT:
         coords.y += _size/2;
         return coords;
         break;
-    case Grid::SquareLocation::RIGHT:
+    case World::SquareLocation::RIGHT:
         coords.x += _size;
         coords.y += _size/2;
         return coords;
         break;
-    case Grid::SquareLocation::CENTER:
+    case World::SquareLocation::CENTER:
         coords.x += _size/2;
         coords.y += _size/2;
         return coords;
@@ -162,7 +164,7 @@ sf::Vector2f Grid::grid_pos_coords(sf::Vector2u position, Grid::SquareLocation l
     throw std::invalid_argument("Invalid location in square.");
 }
 
-void Grid::move_entity(sf::Vector2u& entity, Direction direction) const {
+void World::move_entity(sf::Vector2u& entity, Direction direction) const {
     switch (direction) {
         case (Direction::UP):
             if (entity.y > 0) {
@@ -187,9 +189,35 @@ void Grid::move_entity(sf::Vector2u& entity, Direction direction) const {
     }
 }
 
-float Grid::get_square_size() const {
+float World::get_square_size() const {
     return _size;
 }
-sf::Vector2u Grid::get_dimensions() const {
+sf::Vector2u World::get_dimensions() const {
     return _dimensions;
+}
+
+void World::create_fruit() {
+    sf::Vector2u position{rand() % _dimensions.x, rand() % _dimensions.y };
+
+    while (!std::all_of(_fruitList.begin(), _fruitList.end(), [position](Fruit fruit) {
+        return fruit.get_pos() != position;
+    })) {
+        position = {rand() % _dimensions.x, rand() % _dimensions.y };
+    }
+
+    _fruitList.push_back(Fruit(this, position, _fruitTexture));
+}
+
+std::vector<Fruit> World::get_fruit_list() const {
+    return _fruitList;
+}
+
+void World::destroy_fruit_index(int index) {
+    _fruitList.erase(_fruitList.begin() + index);
+}
+
+void World::draw_fruit(sf::RenderWindow& window) const {
+    for (int i = 0; i < _fruitList.size(); i++) {
+        window.draw(_fruitList[i].get_sprite());
+    };
 }

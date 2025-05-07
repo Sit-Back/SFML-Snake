@@ -1,19 +1,16 @@
 #pragma once 
 #include <SFML/Graphics.hpp>
 #include "utility.hpp"
-#include "grid.hpp"
+
+class World;
 
 class Fruit {
 public:
-    Fruit(Grid& gameGrid, sf::Vector2u gridPosition) : _sprite(_texture) {
-        sf::Vector2f scale = {gameGrid.get_square_size()/_texture.getSize().x,gameGrid.get_square_size()/_texture.getSize().y};
-        _sprite.scale(scale);
-        _sprite.setPosition(gameGrid.grid_pos_coords(gridPosition));
-    }
-
+    Fruit(const World* gameGrid, sf::Vector2u gridPosition, sf::Texture& texture);
     sf::Sprite get_sprite() const;
+    sf::Vector2u get_pos() const;
         
 private:
-    sf::Texture _texture = load_texture("apple.png");
     sf::Sprite _sprite;
+    sf::Vector2u _pos;
 };

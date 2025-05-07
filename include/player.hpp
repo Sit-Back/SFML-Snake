@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <deque>
-#include "grid.hpp"
+#include "world.hpp"
 
 const int MOVE_QUEUE_SIZE = 2;
 const sf::Color PLAYER_COLOR(245, 66, 129);
@@ -18,7 +18,7 @@ class Player {
         int _length;
 
         //Constructors
-        Player(const Grid& gameGrid);
+        Player(World& gameGrid, sf::Texture& eyeTexture);
 
         //General Methods
         void draw(sf::RenderWindow& window);
@@ -33,11 +33,12 @@ class Player {
 
     private:
         //General Variables
-        const Grid& _gameGrid;
+        World& _gameGrid;
         sf::CircleShape _head;
         sf::CircleShape _end;
         sf::Vector2u _headPos;
         std::queue<Direction> _inputBuffer;
+        sf::Sprite _eyeSprite;
 
         //Tail Variables
         std::deque<sf::Vector2u> _turnPosList;
@@ -46,7 +47,7 @@ class Player {
         //Methods
         std::optional<Direction> get_next_direction();
         std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle) const;
-        Grid::SquareLocation travel_entry(const Direction search_dir) const;
+        World::SquareLocation travel_entry(const Direction search_dir) const;
         std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalPosition) const;
         void add_verticies(std::vector<sf::Vector2f> points);
         void update_tail();

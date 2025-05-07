@@ -13,9 +13,7 @@ sf::Vector2f rotate_vector(sf::Vector2f initialVector, sf::Angle rotation) {
 
 sf::Texture load_texture(std::string filename) {
     sf::Texture texture;
-    if (texture.loadFromFile(ASSET_PATH_RELEASE / filename)) {
-        return texture;
-    } else if (texture.loadFromFile(ASSET_PATH_DEV / filename)) {
+    if (texture.loadFromFile(ASSET_PATH / filename)) {
         return texture;
     }
 
