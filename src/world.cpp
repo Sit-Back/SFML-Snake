@@ -4,7 +4,7 @@
 #include <algorithm>
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
-    sf::Vector2i difference(final_grid.x - initial_grid.x, final_grid.y - initial_grid.y);
+    sf::Vector2i difference(static_cast<int>(final_grid.x) - initial_grid.x, static_cast<int>(final_grid.y) - initial_grid.y);
 
     if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
     else if (difference.x < 0 && difference.y == 0) return Direction::LEFT;
@@ -47,29 +47,26 @@ sf::Angle direction_to_angle(Direction direction) {
     switch (direction) {
         case Direction::UP:
             return sf::radians(-M_PI_2);
-            break;
         case Direction::DOWN:
             return sf::radians(M_PI_2);
-            break;
         case Direction::LEFT:
             return sf::radians(M_PI);
-            break;
         case Direction::RIGHT:
             return sf::radians(0.f);
-            break;
     }
 
-    return sf::Angle();
+    return {};
 }
 
 World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
     _fruitTexture = load_texture("apple.png");
     int square_counter = 0;
-    sf::Color square_color;
 
     for (int row = 0; row < _dimensions.y; row++) {
         std::vector<sf::Vector2f> columnValues;
+        auto row_fl = static_cast<float>(row);
         for (int column = 0; column < _dimensions.x; column++) {
+            sf::Color square_color;
             if ((column+row)%2 == 0) {
                 square_color.r = 163;
                 square_color.g = 201;
@@ -80,10 +77,11 @@ World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dim
                 square_color.b = 133;
             }
 
-            sf::Vector2f top_left = {column*_size, row*_size};
-            sf::Vector2f top_right{column*_size + _size, row*_size};
-            sf::Vector2f bottom_left{column*_size, row*_size+_size};
-            sf::Vector2f bottom_right{column*_size + _size, row*_size+_size};
+            auto col_fl = static_cast<float>(column);
+            sf::Vector2f top_left = {col_fl*_size, row_fl*_size};
+            sf::Vector2f top_right{col_fl*_size + _size, row_fl*_size};
+            sf::Vector2f bottom_left{col_fl*_size, row_fl*_size+_size};
+            sf::Vector2f bottom_right{col_fl*_size + _size, row_fl*_size+_size};
 
             columnValues.push_back(top_left);
 
@@ -122,43 +120,34 @@ sf::Vector2f World::grid_pos_coords(sf::Vector2u position, World::SquareLocation
     {
     case World::SquareLocation::TOP_LEFT:
         return coords;
-        break;
     case World::SquareLocation::TOP_RIGHT:
         coords.x += _size;
         return coords;
-        break;
     case World::SquareLocation::BOTTOM_LEFT:
         coords.y += _size;
         return coords;
-        break;
     case World::SquareLocation::BOTTOM_RIGHT:
         coords.x += _size;
         coords.y += _size;
         return coords;
-        break;
     case World::SquareLocation::TOP:
         coords.x += _size/2;
         return coords;
-        break;
     case World::SquareLocation::BOTTOM:
         coords.x += _size/2;
         coords.y += _size;
         return coords;
-        break;
     case World::SquareLocation::LEFT:
         coords.y += _size/2;
         return coords;
-        break;
     case World::SquareLocation::RIGHT:
         coords.x += _size;
         coords.y += _size/2;
         return coords;
-        break;
     case World::SquareLocation::CENTER:
         coords.x += _size/2;
         coords.y += _size/2;
         return coords;
-        break;
     }
 
     throw std::invalid_argument("Invalid location in square.");
@@ -199,7 +188,7 @@ sf::Vector2u World::get_dimensions() const {
 void World::create_fruit() {
     sf::Vector2u position{rand() % _dimensions.x, rand() % _dimensions.y };
 
-    while (!std::all_of(_fruitList.begin(), _fruitList.end(), [position](Fruit fruit) {
+    while (!std::ranges::all_of(_fruitList, [position](const Fruit& fruit) {
         return fruit.get_pos() != position;
     })) {
         position = {rand() % _dimensions.x, rand() % _dimensions.y };

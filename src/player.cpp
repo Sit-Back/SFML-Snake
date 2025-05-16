@@ -1,12 +1,11 @@
 #include <queue>
 #include <cmath>
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "player.hpp"
 #include "world.hpp"
 #include "utility.hpp"
 
-Player::Player(World& gameGrid, sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
+Player::Player(World& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
     _headPos = {11, 5};
     _turnPosList.push_front(_headPos);
     _length = INITIAL_PLAYER_LENGTH;
@@ -18,8 +17,8 @@ Player::Player(World& gameGrid, sf::Texture& eyeTexture) : _gameGrid(gameGrid), 
     _head.setRadius(PLAYER_WIDTH/2);
     _head.setFillColor(PLAYER_COLOR);
     sf::Vector2f eyeBounds = _eyeSprite.getLocalBounds().size;
-    float eyeScalex = (PLAYER_WIDTH + PLAYER_WIDTH/3)/eyeTexture.getSize().x;
-    float eyeScaley = (PLAYER_WIDTH + PLAYER_WIDTH/3)/eyeTexture.getSize().y;
+    float eyeScalex = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().x);
+    float eyeScaley = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().y);
     sf::Vector2f eyeScale = {eyeScalex, eyeScaley};
     _eyeSprite.setOrigin({eyeBounds.x/2, eyeBounds.y/2});
     _eyeSprite.scale(eyeScale);
@@ -84,27 +83,23 @@ void Player::update_tail() {
 }
  
 //Support Functions
-World::SquareLocation Player::travel_entry(const Direction search_dir) const {
+World::SquareLocation travel_entry(const Direction search_dir) {
     switch (search_dir)
     {
     case Direction::LEFT:
         return World::SquareLocation::RIGHT;
-        break;
     case Direction::RIGHT:
         return World::SquareLocation::LEFT;
-        break;
     case Direction::UP:
         return World::SquareLocation::BOTTOM;
-        break;
     case Direction::DOWN:
         return World::SquareLocation::TOP;
-        break;
     }
 
     throw std::invalid_argument("Invalid Direction");
 }
 
-void Player::add_verticies(std::vector<sf::Vector2f> points) {
+void Player::add_verticies(const std::vector<sf::Vector2f>& points) {
     for (int i = 0; i < points.size(); i++) {
         _tailStrip.append(sf::Vertex({points[i], PLAYER_COLOR}));
     }
@@ -154,13 +149,13 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
     }
 
     for (int i = 1; i < TURN_RESOLUTION + 1; i++) {
-        sf::Angle currentAngle = initialAngle + i*(differenceAngle/(TURN_RESOLUTION+1));
-        float rise = (_gameGrid.get_square_size()/2)*sin(currentAngle.asRadians());
-        float run = (_gameGrid.get_square_size()/2)*cos(currentAngle.asRadians());
+        sf::Angle currentAngle = initialAngle + static_cast<float>(i)*(differenceAngle/(TURN_RESOLUTION+1));
+        const float rise = (_gameGrid.get_square_size()/2)*std::sin(currentAngle.asRadians());
+        const float run = (_gameGrid.get_square_size()/2)*std::cos(currentAngle.asRadians());
 
-        sf::Vector2f pointPosition = {origin.x + run, origin.y + rise};
-        double perpanGradient = -run/rise;
-        sf::Angle angle = sf::radians(atan(perpanGradient));
+        const sf::Vector2f pointPosition = {origin.x + run, origin.y + rise};
+        float perpanGradient = -run/rise;
+        sf::Angle angle = sf::radians(std::atan(perpanGradient));
         angle = initialDirection == Direction::LEFT || finalDirection == Direction::LEFT ? angle - sf::radians(M_PI) : angle;
 
         std::vector<sf::Vector2f> verticies = calc_width_vertex(pointPosition, angle);
@@ -172,7 +167,7 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
 }
 
 std::optional<Direction> Player::get_next_direction() {
-    if (_inputBuffer.size() > 0) {
+    if (!_inputBuffer.empty()) {
 
         
         Direction direction = _inputBuffer.front();
@@ -184,7 +179,8 @@ std::optional<Direction> Player::get_next_direction() {
     return std::nullopt;
 }
 
-void Player::draw(sf::RenderWindow& window) {
+void Player::draw(sf::RenderWindow& window) const
+{
     window.draw(_head);
     window.draw(_end);
     window.draw(_tailStrip);
@@ -207,11 +203,11 @@ Direction Player::get_move_direction() const {
     return _direction;
 }
 
-std::vector<sf::Vector2f> Player::calc_width_vertex(sf::Vector2f position, sf::Angle angle) const {
+std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle) {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
-    initialVector.x = PLAYER_WIDTH/2*cos(angle.asRadians());
-    initialVector.y = PLAYER_WIDTH/2*sin(angle.asRadians());
+    initialVector.x = PLAYER_WIDTH/2*std::cos(angle.asRadians());
+    initialVector.y = PLAYER_WIDTH/2*std::sin(angle.asRadians());
 
     //Rotate the initial vector to both sides
     sf::Vector2f rotation1 = rotate_vector(initialVector, sf::radians(M_PI_2));

@@ -11,6 +11,9 @@ const int TURN_RESOLUTION = 10;
 const int INITIAL_PLAYER_LENGTH = 4;
 const float PLAYER_WIDTH = 40;
 
+std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle);
+World::SquareLocation travel_entry(Direction search_dir);
+
 class Player {
     public: 
         //General Variables
@@ -18,12 +21,12 @@ class Player {
         int _length;
 
         //Constructors
-        Player(World& gameGrid, sf::Texture& eyeTexture);
+        Player(World& gameGrid, const sf::Texture& eyeTexture);
 
         //General Methods
-        void draw(sf::RenderWindow& window);
+        void draw(sf::RenderWindow& window) const;
         void update();
-        void add_move_to_buffer(const Direction move);
+        void add_move_to_buffer(Direction move);
 
         //Getter Methods
         sf::Vector2f get_position() const;
@@ -46,9 +49,7 @@ class Player {
         
         //Methods
         std::optional<Direction> get_next_direction();
-        std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle) const;
-        World::SquareLocation travel_entry(const Direction search_dir) const;
         std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalPosition) const;
-        void add_verticies(std::vector<sf::Vector2f> points);
+        void add_verticies(const std::vector<sf::Vector2f>& points);
         void update_tail();
 };
