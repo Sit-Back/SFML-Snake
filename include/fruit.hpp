@@ -1,12 +1,11 @@
 #pragma once 
 #include <SFML/Graphics.hpp>
-#include "utility.hpp"
 
 class World;
 
 class Fruit {
 public:
-    Fruit(const World* gameGrid, sf::Vector2u gridPosition, sf::Texture& texture);
+    Fruit(const World* gameGrid, sf::Vector2u gridPosition, const sf::Texture& texture);
     sf::Sprite get_sprite() const;
     sf::Vector2u get_pos() const;
         

@@ -33,9 +33,9 @@ class World {
 
         World(sf::Vector2u dimensions, float size);
     
-        sf::VertexArray get_verticies() const;
-        sf::Vector2f grid_pos_coords(sf::Vector2u position) const;
-        sf::Vector2f grid_pos_coords(sf::Vector2u position, World::SquareLocation location_in_square ) const;
+        sf::VertexArray get_vertices() const;
+        sf::Vector2f grid_pos_coordinates(sf::Vector2u position) const;
+        sf::Vector2f grid_pos_coordinates(sf::Vector2u position, World::SquareLocation location_in_square ) const;
         void move_entity(sf::Vector2u& entity, Direction direction) const;
         float get_square_size() const;
         sf::Vector2u get_dimensions() const;
@@ -47,7 +47,7 @@ class World {
         const sf::Vector2u _dimensions;
         const float _size;
         sf::Texture _fruitTexture;
-        sf::VertexArray _gridVerticies;
+        sf::VertexArray _gridVertices;
         std::vector<Fruit> _fruitList;
         std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
 };

@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <deque>
+#include <queue>
 #include "world.hpp"
 
 const int MOVE_QUEUE_SIZE = 2;
@@ -50,6 +51,6 @@ class Player {
         //Methods
         std::optional<Direction> get_next_direction();
         std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalPosition) const;
-        void add_verticies(const std::vector<sf::Vector2f>& points);
+        void add_vertices(const std::vector<sf::Vector2f>& points);
         void update_tail();
 };

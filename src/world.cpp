@@ -2,9 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <algorithm>
+#include "utility.hpp"
 
 Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
-    sf::Vector2i difference(static_cast<int>(final_grid.x) - initial_grid.x, static_cast<int>(final_grid.y) - initial_grid.y);
+    const sf::Vector2i difference(static_cast<int>(final_grid.x) - initial_grid.x, static_cast<int>(final_grid.y) - initial_grid.y);
 
     if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
     else if (difference.x < 0 && difference.y == 0) return Direction::LEFT;
@@ -58,7 +59,7 @@ sf::Angle direction_to_angle(Direction direction) {
     return {};
 }
 
-World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dimensions), _gridVerticies(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
+World::World(sf::Vector2u dimensions, float size) : _dimensions(dimensions), _size(size), _gridVertices(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
     _fruitTexture = load_texture("apple.png");
     int square_counter = 0;
 
@@ -85,19 +86,19 @@ World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dim
 
             columnValues.push_back(top_left);
 
-            _gridVerticies[square_counter*6].position = top_left;
-            _gridVerticies[square_counter*6].color = square_color;
-            _gridVerticies[square_counter*6+1].position = top_right;
-            _gridVerticies[square_counter*6+1].color = square_color;
-            _gridVerticies[square_counter*6+2].position = bottom_right;
-            _gridVerticies[square_counter*6+2].color = square_color;
+            _gridVertices[square_counter*6].position = top_left;
+            _gridVertices[square_counter*6].color = square_color;
+            _gridVertices[square_counter*6+1].position = top_right;
+            _gridVertices[square_counter*6+1].color = square_color;
+            _gridVertices[square_counter*6+2].position = bottom_right;
+            _gridVertices[square_counter*6+2].color = square_color;
 
-            _gridVerticies[square_counter*6+3].position = top_left;
-            _gridVerticies[square_counter*6+3].color = square_color;
-            _gridVerticies[square_counter*6+4].position = bottom_right;
-            _gridVerticies[square_counter*6+4].color = square_color;
-            _gridVerticies[square_counter*6+5].position = bottom_left;
-            _gridVerticies[square_counter*6+5].color = square_color;
+            _gridVertices[square_counter*6+3].position = top_left;
+            _gridVertices[square_counter*6+3].color = square_color;
+            _gridVertices[square_counter*6+4].position = bottom_right;
+            _gridVertices[square_counter*6+4].color = square_color;
+            _gridVertices[square_counter*6+5].position = bottom_left;
+            _gridVertices[square_counter*6+5].color = square_color;
 
             square_counter++;
        }
@@ -106,15 +107,15 @@ World::World(sf::Vector2u dimensions, float size) : _size(size), _dimensions(dim
     }
 }
 
-sf::VertexArray World::get_verticies() const {
-    return _gridVerticies;
+sf::VertexArray World::get_vertices() const {
+    return _gridVertices;
 }
 
-sf::Vector2f World::grid_pos_coords(sf::Vector2u position) const {
+sf::Vector2f World::grid_pos_coordinates(const sf::Vector2u position) const {
     return _gridPositionsMatrix.at(position.y).at(position.x);
 }
 
-sf::Vector2f World::grid_pos_coords(sf::Vector2u position, World::SquareLocation location_in_square ) const {
+sf::Vector2f World::grid_pos_coordinates(const sf::Vector2u position, const World::SquareLocation location_in_square ) const {
     sf::Vector2f coords = _gridPositionsMatrix.at(position.y).at(position.x);
     switch (location_in_square)
     {
@@ -194,7 +195,7 @@ void World::create_fruit() {
         position = {rand() % _dimensions.x, rand() % _dimensions.y };
     }
 
-    _fruitList.push_back(Fruit(this, position, _fruitTexture));
+    _fruitList.emplace_back(this, position, _fruitTexture);
 }
 
 std::vector<Fruit> World::get_fruit_list() const {
@@ -206,7 +207,7 @@ void World::destroy_fruit_index(int index) {
 }
 
 void World::draw_fruit(sf::RenderWindow& window) const {
-    for (int i = 0; i < _fruitList.size(); i++) {
-        window.draw(_fruitList[i].get_sprite());
+    for (const Fruit& fruit : _fruitList) {
+        window.draw(fruit.get_sprite());
     };
 }

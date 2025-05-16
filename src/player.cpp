@@ -17,9 +17,9 @@ Player::Player(World& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(gameG
     _head.setRadius(PLAYER_WIDTH/2);
     _head.setFillColor(PLAYER_COLOR);
     sf::Vector2f eyeBounds = _eyeSprite.getLocalBounds().size;
-    float eyeScalex = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().x);
-    float eyeScaley = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().y);
-    sf::Vector2f eyeScale = {eyeScalex, eyeScaley};
+    float eyeScaleX = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().x);
+    float eyeScaleY = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().y);
+    sf::Vector2f eyeScale = {eyeScaleX, eyeScaleY};
     _eyeSprite.setOrigin({eyeBounds.x/2, eyeBounds.y/2});
     _eyeSprite.scale(eyeScale);
     _eyeSprite.setPosition(get_head_center());
@@ -60,7 +60,7 @@ void Player::update_tail() {
     sf::Vector2u currentSearchPos = _headPos;
     Direction searchDirection = get_opposite(_direction);
     _tailStrip.clear();
-    add_verticies(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection)));
+    add_vertices(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection)));
 
     int corner_index = 0;
     int traversed_squares = 0;
@@ -68,17 +68,17 @@ void Player::update_tail() {
         if (_turnPosList.size() > corner_index + 1 && currentSearchPos == _turnPosList[corner_index]) {
             Direction initialDirection = searchDirection;
             searchDirection = get_direction_to(currentSearchPos, _turnPosList[corner_index+1]);
-            add_verticies(generate_circle_vertices(currentSearchPos, initialDirection, searchDirection));
+            add_vertices(generate_circle_vertices(currentSearchPos, initialDirection, searchDirection));
             corner_index++;
         }
 
         _gameGrid.move_entity(currentSearchPos, searchDirection);
-        sf::Vector2f vertexOrigin = _gameGrid.grid_pos_coords(currentSearchPos, travel_entry(searchDirection));
-        add_verticies(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
+        sf::Vector2f vertexOrigin = _gameGrid.grid_pos_coordinates(currentSearchPos, travel_entry(searchDirection));
+        add_vertices(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;
     }
-    sf::Vector2f endPos = _gameGrid.grid_pos_coords(currentSearchPos, World::SquareLocation::CENTER);
-    add_verticies(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
+    sf::Vector2f endPos = _gameGrid.grid_pos_coordinates(currentSearchPos, World::SquareLocation::CENTER);
+    add_vertices(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
     _end.setPosition(endPos);
 }
  
@@ -99,9 +99,9 @@ World::SquareLocation travel_entry(const Direction search_dir) {
     throw std::invalid_argument("Invalid Direction");
 }
 
-void Player::add_verticies(const std::vector<sf::Vector2f>& points) {
-    for (int i = 0; i < points.size(); i++) {
-        _tailStrip.append(sf::Vertex({points[i], PLAYER_COLOR}));
+void Player::add_vertices(const std::vector<sf::Vector2f>& points) {
+    for (sf::Vector2f point : points) {
+        _tailStrip.append(sf::Vertex({point, PLAYER_COLOR}));
     }
 }
 
@@ -140,12 +140,12 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         //Left/Counter-Clockwise
 
         initialAngle = direction_to_angle(initialDirection) + sf::radians(M_PI_2);
-        origin = _gameGrid.grid_pos_coords(initialPos, potentialOrigin[0]);
+        origin = _gameGrid.grid_pos_coordinates(initialPos, potentialOrigin[0]);
     } else {
         //Right/Clockwise
 
         initialAngle = direction_to_angle(initialDirection) - sf::radians(M_PI_2);
-        origin = _gameGrid.grid_pos_coords(initialPos, potentialOrigin[1]);
+        origin = _gameGrid.grid_pos_coordinates(initialPos, potentialOrigin[1]);
     }
 
     for (int i = 1; i < TURN_RESOLUTION + 1; i++) {
@@ -158,9 +158,9 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         sf::Angle angle = sf::radians(std::atan(perpanGradient));
         angle = initialDirection == Direction::LEFT || finalDirection == Direction::LEFT ? angle - sf::radians(M_PI) : angle;
 
-        std::vector<sf::Vector2f> verticies = calc_width_vertex(pointPosition, angle);
-        circleVertices.push_back(verticies[0]);
-        circleVertices.push_back(verticies[1]);
+        std::vector<sf::Vector2f> vertices = calc_width_vertex(pointPosition, angle);
+        circleVertices.push_back(vertices[0]);
+        circleVertices.push_back(vertices[1]);
       }
 
     return circleVertices;
@@ -196,7 +196,7 @@ sf::Vector2u Player::get_position_grid() const {
 }
 
 sf::Vector2f Player::get_head_center() const {
-    return _gameGrid.grid_pos_coords(_headPos, World::SquareLocation::CENTER);
+    return _gameGrid.grid_pos_coordinates(_headPos, World::SquareLocation::CENTER);
 }
 
 Direction Player::get_move_direction() const {
