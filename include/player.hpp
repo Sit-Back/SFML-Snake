@@ -4,16 +4,16 @@
 #include <vector>
 #include <deque>
 #include <queue>
-#include "world.hpp"
+#include "SnakeModel.hpp"
 
-const int MOVE_QUEUE_SIZE = 2;
-const sf::Color PLAYER_COLOR(245, 66, 129);
-const int TURN_RESOLUTION = 10;
-const int INITIAL_PLAYER_LENGTH = 4;
-const float PLAYER_WIDTH = 40;
+constexpr int MOVE_QUEUE_SIZE = 2;
+constexpr sf::Color PLAYER_COLOR(245, 66, 129);
+constexpr int TURN_RESOLUTION = 10;
+constexpr int INITIAL_PLAYER_LENGTH = 4;
+constexpr float PLAYER_WIDTH = 40;
 
 std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle);
-World::SquareLocation travel_entry(Direction search_dir);
+SnakeModel::SquareLocation travel_entry(Direction search_dir);
 
 class Player {
     public: 
@@ -22,7 +22,7 @@ class Player {
         int _length;
 
         //Constructors
-        Player(World& gameGrid, const sf::Texture& eyeTexture);
+        Player(SnakeModel& gameGrid, const sf::Texture& eyeTexture);
 
         //General Methods
         void draw(sf::RenderWindow& window) const;
@@ -37,7 +37,7 @@ class Player {
 
     private:
         //General Variables
-        World& _gameGrid;
+        SnakeModel& _gameGrid;
         sf::CircleShape _head;
         sf::CircleShape _end;
         sf::Vector2u _headPos;

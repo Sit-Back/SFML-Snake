@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "world.hpp"
+#include "SnakeModel.hpp"
 #include "player.hpp"
 #include "utility.hpp"
 
@@ -18,7 +18,7 @@ int main()
     sf::View gridView(sf::FloatRect({0,0},{800, 800}));
     window.setView(gridView);
 
-    World game_grid = World(sf::Vector2u{15, 15}, GRID_SIZE);
+    SnakeModel game_grid = SnakeModel(sf::Vector2u{15, 15}, GRID_SIZE);
 
     sf::Texture eyeTexture = load_texture("eyes.png");
     eyeTexture.setSmooth(true);

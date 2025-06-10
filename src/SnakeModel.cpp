@@ -1,4 +1,4 @@
-#include "world.hpp"
+#include "SnakeModel.hpp"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <algorithm>
@@ -59,7 +59,7 @@ sf::Angle direction_to_angle(Direction direction) {
     return {};
 }
 
-World::World(sf::Vector2u dimensions, float size) : _dimensions(dimensions), _size(size), _gridVertices(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
+SnakeModel::SnakeModel(sf::Vector2u dimensions, float size) : _dimensions(dimensions), _size(size), _gridVertices(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
     _fruitTexture = load_texture("apple.png");
     int square_counter = 0;
 
@@ -107,45 +107,45 @@ World::World(sf::Vector2u dimensions, float size) : _dimensions(dimensions), _si
     }
 }
 
-sf::VertexArray World::get_vertices() const {
+sf::VertexArray SnakeModel::get_vertices() const {
     return _gridVertices;
 }
 
-sf::Vector2f World::grid_pos_coordinates(const sf::Vector2u position) const {
+sf::Vector2f SnakeModel::grid_pos_coordinates(const sf::Vector2u position) const {
     return _gridPositionsMatrix.at(position.y).at(position.x);
 }
 
-sf::Vector2f World::grid_pos_coordinates(const sf::Vector2u position, const World::SquareLocation location_in_square ) const {
+sf::Vector2f SnakeModel::grid_pos_coordinates(const sf::Vector2u position, const SnakeModel::SquareLocation location_in_square ) const {
     sf::Vector2f coords = _gridPositionsMatrix.at(position.y).at(position.x);
     switch (location_in_square)
     {
-    case World::SquareLocation::TOP_LEFT:
+    case SnakeModel::SquareLocation::TOP_LEFT:
         return coords;
-    case World::SquareLocation::TOP_RIGHT:
+    case SnakeModel::SquareLocation::TOP_RIGHT:
         coords.x += _size;
         return coords;
-    case World::SquareLocation::BOTTOM_LEFT:
+    case SnakeModel::SquareLocation::BOTTOM_LEFT:
         coords.y += _size;
         return coords;
-    case World::SquareLocation::BOTTOM_RIGHT:
+    case SnakeModel::SquareLocation::BOTTOM_RIGHT:
         coords.x += _size;
         coords.y += _size;
         return coords;
-    case World::SquareLocation::TOP:
+    case SnakeModel::SquareLocation::TOP:
         coords.x += _size/2;
         return coords;
-    case World::SquareLocation::BOTTOM:
+    case SnakeModel::SquareLocation::BOTTOM:
         coords.x += _size/2;
         coords.y += _size;
         return coords;
-    case World::SquareLocation::LEFT:
+    case SnakeModel::SquareLocation::LEFT:
         coords.y += _size/2;
         return coords;
-    case World::SquareLocation::RIGHT:
+    case SnakeModel::SquareLocation::RIGHT:
         coords.x += _size;
         coords.y += _size/2;
         return coords;
-    case World::SquareLocation::CENTER:
+    case SnakeModel::SquareLocation::CENTER:
         coords.x += _size/2;
         coords.y += _size/2;
         return coords;
@@ -154,7 +154,7 @@ sf::Vector2f World::grid_pos_coordinates(const sf::Vector2u position, const Worl
     throw std::invalid_argument("Invalid location in square.");
 }
 
-void World::move_entity(sf::Vector2u& entity, Direction direction) const {
+void SnakeModel::move_entity(sf::Vector2u& entity, Direction direction) const {
     switch (direction) {
         case (Direction::UP):
             if (entity.y > 0) {
@@ -179,14 +179,14 @@ void World::move_entity(sf::Vector2u& entity, Direction direction) const {
     }
 }
 
-float World::get_square_size() const {
+float SnakeModel::get_square_size() const {
     return _size;
 }
-sf::Vector2u World::get_dimensions() const {
+sf::Vector2u SnakeModel::get_dimensions() const {
     return _dimensions;
 }
 
-void World::create_fruit() {
+void SnakeModel::create_fruit() {
     sf::Vector2u position{rand() % _dimensions.x, rand() % _dimensions.y };
 
     while (!std::ranges::all_of(_fruitList, [position](const Fruit& fruit) {
@@ -198,15 +198,15 @@ void World::create_fruit() {
     _fruitList.emplace_back(this, position, _fruitTexture);
 }
 
-std::vector<Fruit> World::get_fruit_list() const {
+std::vector<Fruit> SnakeModel::get_fruit_list() const {
     return _fruitList;
 }
 
-void World::destroy_fruit_index(int index) {
+void SnakeModel::destroy_fruit_index(int index) {
     _fruitList.erase(_fruitList.begin() + index);
 }
 
-void World::draw_fruit(sf::RenderWindow& window) const {
+void SnakeModel::draw_fruit(sf::RenderWindow& window) const {
     for (const Fruit& fruit : _fruitList) {
         window.draw(fruit.get_sprite());
     };

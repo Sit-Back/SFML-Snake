@@ -2,10 +2,10 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "player.hpp"
-#include "world.hpp"
+#include "SnakeModel.hpp"
 #include "utility.hpp"
 
-Player::Player(World& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
+Player::Player(SnakeModel& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
     _headPos = {11, 5};
     _turnPosList.push_front(_headPos);
     _length = INITIAL_PLAYER_LENGTH;
@@ -77,23 +77,23 @@ void Player::update_tail() {
         add_vertices(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;
     }
-    sf::Vector2f endPos = _gameGrid.grid_pos_coordinates(currentSearchPos, World::SquareLocation::CENTER);
+    sf::Vector2f endPos = _gameGrid.grid_pos_coordinates(currentSearchPos, SnakeModel::SquareLocation::CENTER);
     add_vertices(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
     _end.setPosition(endPos);
 }
  
 //Support Functions
-World::SquareLocation travel_entry(const Direction search_dir) {
+SnakeModel::SquareLocation travel_entry(const Direction search_dir) {
     switch (search_dir)
     {
     case Direction::LEFT:
-        return World::SquareLocation::RIGHT;
+        return SnakeModel::SquareLocation::RIGHT;
     case Direction::RIGHT:
-        return World::SquareLocation::LEFT;
+        return SnakeModel::SquareLocation::LEFT;
     case Direction::UP:
-        return World::SquareLocation::BOTTOM;
+        return SnakeModel::SquareLocation::BOTTOM;
     case Direction::DOWN:
-        return World::SquareLocation::TOP;
+        return SnakeModel::SquareLocation::TOP;
     }
 
     throw std::invalid_argument("Invalid Direction");
@@ -111,24 +111,24 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
     differenceAngle = differenceAngle.wrapSigned();
 
     
-    World::SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
+    SnakeModel::SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
     switch (initialDirection)
     {
         case Direction::RIGHT:
-            potentialOrigin[0] = World::SquareLocation::TOP_LEFT;
-            potentialOrigin[1] = World::SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[0] = SnakeModel::SquareLocation::TOP_LEFT;
+            potentialOrigin[1] = SnakeModel::SquareLocation::BOTTOM_LEFT;
             break;
         case Direction::LEFT:
-            potentialOrigin[0] = World::SquareLocation::BOTTOM_RIGHT;
-            potentialOrigin[1] = World::SquareLocation::TOP_RIGHT;
+            potentialOrigin[0] = SnakeModel::SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[1] = SnakeModel::SquareLocation::TOP_RIGHT;
             break;
         case Direction::UP:
-            potentialOrigin[0] = World::SquareLocation::BOTTOM_LEFT;
-            potentialOrigin[1] = World::SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[0] = SnakeModel::SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[1] = SnakeModel::SquareLocation::BOTTOM_RIGHT;
             break;
         case Direction::DOWN:
-            potentialOrigin[0] = World::SquareLocation::TOP_RIGHT;
-            potentialOrigin[1] = World::SquareLocation::TOP_LEFT; 
+            potentialOrigin[0] = SnakeModel::SquareLocation::TOP_RIGHT;
+            potentialOrigin[1] = SnakeModel::SquareLocation::TOP_LEFT; 
             break;
         default:
             throw std::invalid_argument("Invalid direction.");
@@ -196,7 +196,7 @@ sf::Vector2u Player::get_position_grid() const {
 }
 
 sf::Vector2f Player::get_head_center() const {
-    return _gameGrid.grid_pos_coordinates(_headPos, World::SquareLocation::CENTER);
+    return _gameGrid.grid_pos_coordinates(_headPos, SnakeModel::SquareLocation::CENTER);
 }
 
 Direction Player::get_move_direction() const {

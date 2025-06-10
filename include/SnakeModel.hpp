@@ -17,7 +17,7 @@ sf::Angle direction_to_angle(Direction direction);
 sf::Vector2f direction_to_vector(Direction direction, float magnitude);
 
 
-class World {
+class SnakeModel {
     public:
         enum class SquareLocation {
             TOP_LEFT,
@@ -31,11 +31,11 @@ class World {
             CENTER
         };
 
-        World(sf::Vector2u dimensions, float size);
+        SnakeModel(sf::Vector2u dimensions, float size);
     
         sf::VertexArray get_vertices() const;
         sf::Vector2f grid_pos_coordinates(sf::Vector2u position) const;
-        sf::Vector2f grid_pos_coordinates(sf::Vector2u position, World::SquareLocation location_in_square ) const;
+        sf::Vector2f grid_pos_coordinates(sf::Vector2u position, SnakeModel::SquareLocation location_in_square ) const;
         void move_entity(sf::Vector2u& entity, Direction direction) const;
         float get_square_size() const;
         sf::Vector2u get_dimensions() const;
