@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(SFML 3.0 COMPONENTS Graphics System Window REQUIRED)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
-add_executable(game-snake ${SOURCE_FILES})
+add_executable(game-snake ${SOURCE_FILES}
+        include/TextureHandler.hpp)
 
 target_include_directories(game-snake PRIVATE ${CMAKE_SOURCE_DIR}/include )
 
