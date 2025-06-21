@@ -31,4 +31,4 @@ sf::Angle direction_to_angle(Direction direction);
 sf::Vector2f direction_to_vector(Direction direction, float magnitude);
 sf::Vector2f grid_pos_coordinates(sf::Vector2i position);
 sf::Vector2f grid_pos_coordinates(sf::Vector2i position, SquareLocation location_in_square);
-sf::Vector2i move_position(sf::Vector2i initialpos, Direction direction);
+void move_position(sf::Vector2i& initialpos, Direction direction);

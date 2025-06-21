@@ -18,7 +18,7 @@ void SnakeController::update_display()
 {
     _window.clear(sf::Color::Black);
     _window.draw(_model.get_vertices());
-    _window.draw(_model.get_player());
+    _window.draw(*_model.get_player());
     _model.draw_fruit(_window);
     _window.display();
 }
@@ -54,15 +54,15 @@ void SnakeController::play_game()
 
         if (timer.getElapsedTime().asSeconds() > UPDATE_RATE) {
             if (!_inputBuffer.empty()) {
-                _model.get_player().set_direction(*_get_next_direction());
+                _model.get_player()->set_direction(*_get_next_direction());
             }
             for (int i = 0; i < _model.get_fruit_list().size(); i++) {
-                if (_model.get_player().get_position_grid() == _model.get_fruit_list().at(i)) {
-                    _model.get_player().increment_length();
+                if (_model.get_player()->get_position_grid() == _model.get_fruit_list().at(i)) {
+                    _model.get_player()->increment_length();
                     _model.destroy_fruit_index(i);
                 }
             }
-            _model.get_player().update();
+            _model.get_player()->update();
             _model.create_fruit();
             timer.restart();
         }
@@ -75,7 +75,7 @@ void SnakeController::_add_move_to_buffer(const Direction move) {
     if (_inputBuffer.size() < MOVE_QUEUE_SIZE) {
         if (_inputBuffer.empty()) {
             if (
-                const Direction player_direction = _model.get_player().get_move_direction();
+                const Direction player_direction = _model.get_player()->get_move_direction();
                 player_direction != move
                 && player_direction != get_opposite(move))
             {_inputBuffer.push(move);}

@@ -36,7 +36,7 @@ Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture) {
 
 //Main Updates
 void Player::update() {
-    _headPos = move_position(_headPos, _direction);
+    move_position(_headPos, _direction);
     _head.setPosition(get_head_center());
     _eyeSprite.setPosition(get_head_center());
     _eyeSprite.setRotation(direction_to_angle(_direction));
@@ -66,7 +66,7 @@ void Player::update_tail() {
             corner_index++;
         }
 
-        currentSearchPos = move_position(currentSearchPos, searchDirection);
+        move_position(currentSearchPos, searchDirection);
         sf::Vector2f vertexOrigin = grid_pos_coordinates(currentSearchPos, travel_entry(searchDirection));
         add_vertices(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;

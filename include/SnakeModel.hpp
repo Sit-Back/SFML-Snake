@@ -14,7 +14,7 @@ class SnakeModel
         SnakeModel();
     
         sf::VertexArray get_vertices() const;
-        Player get_player() const;
+        Player* get_player();
         void create_fruit();
         std::vector<sf::Vector2i> get_fruit_list() const;
         void destroy_fruit_index(int index);

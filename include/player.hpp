@@ -46,7 +46,6 @@ class Player final : public sf::Drawable {
         sf::VertexArray _tailStrip;
         
         //Methods
-        std::optional<Direction> get_next_direction();
         std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2i initialPos, Direction initialDirection, Direction finalPosition) const;
         void add_vertices(const std::vector<sf::Vector2f>& points);
         void update_tail();

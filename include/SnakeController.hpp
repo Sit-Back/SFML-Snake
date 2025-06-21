@@ -2,7 +2,7 @@
 #include <queue>
 #include "SnakeModel.hpp"
 
-constexpr float UPDATE_RATE = 0.15f;
+constexpr float UPDATE_RATE = 0.5f;
 constexpr std::string GAME_TITLE = "Snake Game";
 constexpr sf::Vector2u WINDOW_DIMENSIONS = {800, 800};
 

@@ -94,4 +94,4 @@ void SnakeModel::draw_fruit(sf::RenderWindow& window) const {
 
 //Getter Methods
 sf::VertexArray SnakeModel::get_vertices() const {return _gridVertices;}
-Player SnakeModel::get_player() const {return _player;}
+Player* SnakeModel::get_player() {return &_player;}

@@ -75,7 +75,7 @@ sf::Vector2f grid_pos_coordinates(
     const sf::Vector2i position,
     const SquareLocation location_in_square)
 {
-    sf::Vector2f coords = {static_cast<float>(position.y)*GRID_SIZE, static_cast<float>(position.x)*GRID_SIZE};
+    sf::Vector2f coords = {static_cast<float>(position.x)*GRID_SIZE, static_cast<float>(position.y)*GRID_SIZE};
     switch (location_in_square)
     {
     case SquareLocation::TOP_LEFT:
@@ -113,17 +113,19 @@ sf::Vector2f grid_pos_coordinates(
     throw std::invalid_argument("Invalid location in square.");
 }
 
-sf::Vector2i move_position(sf::Vector2i initialpos, const Direction direction) {
+void move_position(sf::Vector2i& initialpos, const Direction direction) {
     switch (direction) {
     case (Direction::UP):
         initialpos.y -= 1;
+        break;
     case (Direction::DOWN):
         initialpos.y += 1;
+        break;
     case (Direction::LEFT):
         initialpos.x -= 1;
+        break;
     case (Direction::RIGHT):
         initialpos.x += 1;
+        break;
     }
-
-    return initialpos;
 }
