@@ -11,10 +11,119 @@ sf::Vector2f rotate_vector(sf::Vector2f initialVector, sf::Angle rotation) {
     return finalVector;
 }
 
-sf::Texture load_texture(const std::string& filename) {
-    if (sf::Texture texture; texture.loadFromFile(ASSET_PATH / filename)) {
-        return texture;
+Direction get_direction_to(const sf::Vector2i initial_grid, const sf::Vector2i final_grid) {
+    const sf::Vector2i difference(static_cast<int>(final_grid.x) - initial_grid.x, static_cast<int>(final_grid.y) - initial_grid.y);
+
+    if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
+    if (difference.x < 0 && difference.y == 0) return Direction::LEFT;
+    if (difference.y > 0 && difference.x == 0) return Direction::DOWN;
+    if (difference.y < 0 && difference.x == 0) return Direction::UP;
+
+    throw std::invalid_argument("No cardinal direction found. (diagonal or same point)");
+}
+
+Direction get_opposite(Direction direction) {
+    switch (direction) {
+    case (Direction::UP):
+        return Direction::DOWN;
+    case (Direction::DOWN):
+        return Direction::UP;
+    case (Direction::LEFT):
+        return Direction::RIGHT;
+    case (Direction::RIGHT):
+        return Direction::LEFT;
     }
 
-    throw std::runtime_error("Asset not found: " + filename);
+    throw std::invalid_argument("Invalid direction supplied");
+}
+
+sf::Vector2f direction_to_vector(Direction direction, float magnitude) {
+    switch (direction) {
+    case (Direction::UP):
+        return sf::Vector2f{0, -magnitude};
+    case (Direction::DOWN):
+        return sf::Vector2f{0, magnitude};
+    case (Direction::LEFT):
+        return sf::Vector2f{-magnitude, 0};
+    case (Direction::RIGHT):
+        return sf::Vector2f{magnitude, 0};
+    }
+
+    throw std::invalid_argument("Invalid direction supplied");
+}
+
+sf::Angle direction_to_angle(Direction direction) {
+    switch (direction) {
+    case Direction::UP:
+        return sf::radians(-M_PI_2);
+    case Direction::DOWN:
+        return sf::radians(M_PI_2);
+    case Direction::LEFT:
+        return sf::radians(M_PI);
+    case Direction::RIGHT:
+        return sf::radians(0.f);
+    }
+
+    return {};
+}
+
+sf::Vector2f grid_pos_coordinates(const sf::Vector2i position) {
+    return {static_cast<float>(position.y) * GRID_SIZE, static_cast<float>(position.x)*GRID_SIZE};
+}
+
+sf::Vector2f grid_pos_coordinates(
+    const sf::Vector2i position,
+    const SquareLocation location_in_square)
+{
+    sf::Vector2f coords = {static_cast<float>(position.y)*GRID_SIZE, static_cast<float>(position.x)*GRID_SIZE};
+    switch (location_in_square)
+    {
+    case SquareLocation::TOP_LEFT:
+        return coords;
+    case SquareLocation::TOP_RIGHT:
+        coords.x += GRID_SIZE;
+        return coords;
+    case SquareLocation::BOTTOM_LEFT:
+        coords.y += GRID_SIZE;
+        return coords;
+    case SquareLocation::BOTTOM_RIGHT:
+        coords.x += GRID_SIZE;
+        coords.y += GRID_SIZE;
+        return coords;
+    case SquareLocation::TOP:
+        coords.x += GRID_SIZE/2;
+        return coords;
+    case SquareLocation::BOTTOM:
+        coords.x += GRID_SIZE/2;
+        coords.y += GRID_SIZE;
+        return coords;
+    case SquareLocation::LEFT:
+        coords.y += GRID_SIZE/2;
+        return coords;
+    case SquareLocation::RIGHT:
+        coords.x += GRID_SIZE;
+        coords.y += GRID_SIZE/2;
+        return coords;
+    case SquareLocation::CENTER:
+        coords.x += GRID_SIZE/2;
+        coords.y += GRID_SIZE/2;
+        return coords;
+    }
+
+    throw std::invalid_argument("Invalid location in square.");
+}
+
+sf::Vector2i move_position(sf::Vector2i initialpos, const Direction direction) {
+    switch (direction) {
+    case (Direction::UP):
+        initialpos.y -= 1;
+    case (Direction::DOWN):
+        initialpos.y += 1;
+    case (Direction::LEFT):
+        initialpos.x -= 1;
+    case (Direction::RIGHT):
+        initialpos.x += 1;
+    }
+
+    return initialpos;
 }

@@ -5,7 +5,7 @@
 #include "SnakeModel.hpp"
 #include "utility.hpp"
 
-Player::Player(SnakeModel& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(gameGrid), _eyeSprite(eyeTexture) {
+Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture) {
     _headPos = {11, 5};
     _turnPosList.push_front(_headPos);
     _length = INITIAL_PLAYER_LENGTH;
@@ -17,8 +17,8 @@ Player::Player(SnakeModel& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(
     _head.setRadius(PLAYER_WIDTH/2);
     _head.setFillColor(PLAYER_COLOR);
     sf::Vector2f eyeBounds = _eyeSprite.getLocalBounds().size;
-    float eyeScaleX = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().x);
-    float eyeScaleY = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture.getSize().y);
+    float eyeScaleX = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture->getSize().x);
+    float eyeScaleY = (PLAYER_WIDTH + PLAYER_WIDTH/3)/static_cast<float>(eyeTexture->getSize().y);
     sf::Vector2f eyeScale = {eyeScaleX, eyeScaleY};
     _eyeSprite.setOrigin({eyeBounds.x/2, eyeBounds.y/2});
     _eyeSprite.scale(eyeScale);
@@ -36,28 +36,22 @@ Player::Player(SnakeModel& gameGrid, const sf::Texture& eyeTexture) : _gameGrid(
 
 //Main Updates
 void Player::update() {
-    if (!_inputBuffer.empty()) {
-        _direction = *get_next_direction();
-        _turnPosList.push_front(_headPos);
-    }
-
-    _gameGrid.move_entity(_headPos, _direction);
+    _headPos = move_position(_headPos, _direction);
     _head.setPosition(get_head_center());
     _eyeSprite.setPosition(get_head_center());
     _eyeSprite.setRotation(direction_to_angle(_direction));
 
-    for (int i = 0; i < _gameGrid.get_fruit_list().size(); i++) {
-        if (_headPos == _gameGrid.get_fruit_list().at(i).get_pos()) {
-            _length++;
-            _gameGrid.destroy_fruit_index(i);
-        }
-    }
-
     update_tail();
-} 
+}
+
+void Player::set_direction(Direction direction)
+{
+    _direction = direction;
+    _turnPosList.push_front(_headPos);
+}
 
 void Player::update_tail() {
-    sf::Vector2u currentSearchPos = _headPos;
+    sf::Vector2i currentSearchPos = _headPos;
     Direction searchDirection = get_opposite(_direction);
     _tailStrip.clear();
     add_vertices(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection)));
@@ -72,28 +66,28 @@ void Player::update_tail() {
             corner_index++;
         }
 
-        _gameGrid.move_entity(currentSearchPos, searchDirection);
-        sf::Vector2f vertexOrigin = _gameGrid.grid_pos_coordinates(currentSearchPos, travel_entry(searchDirection));
+        currentSearchPos = move_position(currentSearchPos, searchDirection);
+        sf::Vector2f vertexOrigin = grid_pos_coordinates(currentSearchPos, travel_entry(searchDirection));
         add_vertices(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
         traversed_squares++;
     }
-    sf::Vector2f endPos = _gameGrid.grid_pos_coordinates(currentSearchPos, SnakeModel::SquareLocation::CENTER);
+    sf::Vector2f endPos = grid_pos_coordinates(currentSearchPos, SquareLocation::CENTER);
     add_vertices(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
     _end.setPosition(endPos);
 }
  
 //Support Functions
-SnakeModel::SquareLocation travel_entry(const Direction search_dir) {
+SquareLocation travel_entry(const Direction search_dir) {
     switch (search_dir)
     {
     case Direction::LEFT:
-        return SnakeModel::SquareLocation::RIGHT;
+        return SquareLocation::RIGHT;
     case Direction::RIGHT:
-        return SnakeModel::SquareLocation::LEFT;
+        return SquareLocation::LEFT;
     case Direction::UP:
-        return SnakeModel::SquareLocation::BOTTOM;
+        return SquareLocation::BOTTOM;
     case Direction::DOWN:
-        return SnakeModel::SquareLocation::TOP;
+        return SquareLocation::TOP;
     }
 
     throw std::invalid_argument("Invalid Direction");
@@ -105,30 +99,35 @@ void Player::add_vertices(const std::vector<sf::Vector2f>& points) {
     }
 }
 
-std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialPos, Direction initialDirection, Direction finalDirection) const {
+void Player::increment_length()
+{
+    _length++;
+}
+
+std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2i initialPos, Direction initialDirection, Direction finalDirection) const {
     std::vector<sf::Vector2f> circleVertices;
     sf::Angle differenceAngle = direction_to_angle(finalDirection)-direction_to_angle(initialDirection);
     differenceAngle = differenceAngle.wrapSigned();
 
     
-    SnakeModel::SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
+    SquareLocation potentialOrigin[2]; //First entry is for if the user turns left, second is for if they turn right.
     switch (initialDirection)
     {
         case Direction::RIGHT:
-            potentialOrigin[0] = SnakeModel::SquareLocation::TOP_LEFT;
-            potentialOrigin[1] = SnakeModel::SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[0] = SquareLocation::TOP_LEFT;
+            potentialOrigin[1] = SquareLocation::BOTTOM_LEFT;
             break;
         case Direction::LEFT:
-            potentialOrigin[0] = SnakeModel::SquareLocation::BOTTOM_RIGHT;
-            potentialOrigin[1] = SnakeModel::SquareLocation::TOP_RIGHT;
+            potentialOrigin[0] = SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[1] = SquareLocation::TOP_RIGHT;
             break;
         case Direction::UP:
-            potentialOrigin[0] = SnakeModel::SquareLocation::BOTTOM_LEFT;
-            potentialOrigin[1] = SnakeModel::SquareLocation::BOTTOM_RIGHT;
+            potentialOrigin[0] = SquareLocation::BOTTOM_LEFT;
+            potentialOrigin[1] = SquareLocation::BOTTOM_RIGHT;
             break;
         case Direction::DOWN:
-            potentialOrigin[0] = SnakeModel::SquareLocation::TOP_RIGHT;
-            potentialOrigin[1] = SnakeModel::SquareLocation::TOP_LEFT; 
+            potentialOrigin[0] = SquareLocation::TOP_RIGHT;
+            potentialOrigin[1] = SquareLocation::TOP_LEFT;
             break;
         default:
             throw std::invalid_argument("Invalid direction.");
@@ -140,18 +139,18 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
         //Left/Counter-Clockwise
 
         initialAngle = direction_to_angle(initialDirection) + sf::radians(M_PI_2);
-        origin = _gameGrid.grid_pos_coordinates(initialPos, potentialOrigin[0]);
+        origin = grid_pos_coordinates(initialPos, potentialOrigin[0]);
     } else {
         //Right/Clockwise
 
         initialAngle = direction_to_angle(initialDirection) - sf::radians(M_PI_2);
-        origin = _gameGrid.grid_pos_coordinates(initialPos, potentialOrigin[1]);
+        origin = grid_pos_coordinates(initialPos, potentialOrigin[1]);
     }
 
     for (int i = 1; i < TURN_RESOLUTION + 1; i++) {
         sf::Angle currentAngle = initialAngle + static_cast<float>(i)*(differenceAngle/(TURN_RESOLUTION+1));
-        const float rise = (_gameGrid.get_square_size()/2)*std::sin(currentAngle.asRadians());
-        const float run = (_gameGrid.get_square_size()/2)*std::cos(currentAngle.asRadians());
+        const float rise = (GRID_SIZE/2)*std::sin(currentAngle.asRadians());
+        const float run = (GRID_SIZE/2)*std::cos(currentAngle.asRadians());
 
         const sf::Vector2f pointPosition = {origin.x + run, origin.y + rise};
         float perpanGradient = -run/rise;
@@ -166,41 +165,12 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2u initialP
     return circleVertices;
 }
 
-std::optional<Direction> Player::get_next_direction() {
-    if (!_inputBuffer.empty()) {
-
-        
-        Direction direction = _inputBuffer.front();
-        _inputBuffer.pop();
-        
-        return direction;
-    }
-
-    return std::nullopt;
-}
-
-void Player::draw(sf::RenderWindow& window) const
+void Player::draw(sf::RenderTarget& target, const sf::RenderStates states) const
 {
-    window.draw(_head);
-    window.draw(_end);
-    window.draw(_tailStrip);
-    window.draw(_eyeSprite);
-}
-
-sf::Vector2f Player::get_position() const {
-    return _head.getPosition();
-}
-
-sf::Vector2u Player::get_position_grid() const {
-    return _headPos;
-}
-
-sf::Vector2f Player::get_head_center() const {
-    return _gameGrid.grid_pos_coordinates(_headPos, SnakeModel::SquareLocation::CENTER);
-}
-
-Direction Player::get_move_direction() const {
-    return _direction;
+    target.draw(_head, states);
+    target.draw(_end, states);
+    target.draw(_tailStrip, states);
+    target.draw(_eyeSprite, states);
 }
 
 std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle) {
@@ -220,14 +190,12 @@ std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle ang
     return std::vector<sf::Vector2f>{pos1, pos2};
 }
 
-void Player::add_move_to_buffer(const Direction move) {
-    if (_inputBuffer.size() < MOVE_QUEUE_SIZE) {
-        if (_inputBuffer.empty()) {
-            if (_direction != move && _direction != get_opposite(move)) {
-                _inputBuffer.push(move);
-            }
-        } else if (_inputBuffer.back() != move && _inputBuffer.back() != get_opposite(move)) {
-            _inputBuffer.push(move);
-        }
-    }
+ // Getter Functions
+int Player::get_length() const {return _length;}
+sf::Vector2f Player::get_position() const {return _head.getPosition();}
+sf::Vector2i Player::get_position_grid() const {return _headPos;}
+Direction Player::get_move_direction() const {return _direction;}
+sf::Vector2f Player::get_head_center() const
+{
+    return grid_pos_coordinates(_headPos, SquareLocation::CENTER);
 }

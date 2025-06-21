@@ -4,210 +4,94 @@
 #include <algorithm>
 #include "utility.hpp"
 
-Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid) {
-    const sf::Vector2i difference(static_cast<int>(final_grid.x) - initial_grid.x, static_cast<int>(final_grid.y) - initial_grid.y);
-
-    if (difference.x > 0 && difference.y == 0) return Direction::RIGHT;
-    else if (difference.x < 0 && difference.y == 0) return Direction::LEFT;
-    else if (difference.y > 0 && difference.x == 0) return Direction::DOWN;
-    else if (difference.y < 0 && difference.x == 0) return Direction::UP;
-    else throw std::invalid_argument("No cardinal direction found. (diagonal or same point)");
-}
-
-Direction get_opposite(Direction direction) {
-    switch (direction) {
-        case (Direction::UP):
-            return Direction::DOWN;
-        case (Direction::DOWN):
-            return Direction::UP;
-        case (Direction::LEFT):
-            return Direction::RIGHT;
-        case (Direction::RIGHT):
-            return Direction::LEFT;
-    }
-
-    throw std::invalid_argument("Invalid direction supplied");
-}
-
-sf::Vector2f direction_to_vector(Direction direction, float magnitude) {
-    switch (direction) {
-        case (Direction::UP):
-            return sf::Vector2f{0, -magnitude};
-        case (Direction::DOWN):
-            return sf::Vector2f{0, magnitude};
-        case (Direction::LEFT):
-            return sf::Vector2f{-magnitude, 0};
-        case (Direction::RIGHT):
-            return sf::Vector2f{magnitude, 0};
-    }
-
-    throw std::invalid_argument("Invalid direction supplied");
-}
-
-sf::Angle direction_to_angle(Direction direction) {
-    switch (direction) {
-        case Direction::UP:
-            return sf::radians(-M_PI_2);
-        case Direction::DOWN:
-            return sf::radians(M_PI_2);
-        case Direction::LEFT:
-            return sf::radians(M_PI);
-        case Direction::RIGHT:
-            return sf::radians(0.f);
-    }
-
-    return {};
-}
-
-SnakeModel::SnakeModel(sf::Vector2u dimensions, float size) : _dimensions(dimensions), _size(size), _gridVertices(sf::PrimitiveType::Triangles, _dimensions.x*_dimensions.y*6) {
-    _fruitTexture = load_texture("apple.png");
+SnakeModel::SnakeModel() :
+    _player(_textureHandler.get_texture("eyes.png")),
+    _gridVertices(
+        sf::PrimitiveType::Triangles,
+        GRID_DIMENSIONS.x * GRID_DIMENSIONS.y * 6)
+{
     int square_counter = 0;
 
-    for (int row = 0; row < _dimensions.y; row++) {
+    for (int row = 0; row < GRID_DIMENSIONS.y; row++)
+    {
         std::vector<sf::Vector2f> columnValues;
         auto row_fl = static_cast<float>(row);
-        for (int column = 0; column < _dimensions.x; column++) {
+        for (int column = 0; column < GRID_DIMENSIONS.x; column++)
+        {
             sf::Color square_color;
-            if ((column+row)%2 == 0) {
+            if ((column + row) % 2 == 0)
+            {
                 square_color.r = 163;
                 square_color.g = 201;
                 square_color.b = 173;
-            } else {
+            }
+            else
+            {
                 square_color.r = 122;
                 square_color.g = 163;
                 square_color.b = 133;
             }
 
             auto col_fl = static_cast<float>(column);
-            sf::Vector2f top_left = {col_fl*_size, row_fl*_size};
-            sf::Vector2f top_right{col_fl*_size + _size, row_fl*_size};
-            sf::Vector2f bottom_left{col_fl*_size, row_fl*_size+_size};
-            sf::Vector2f bottom_right{col_fl*_size + _size, row_fl*_size+_size};
+            sf::Vector2f top_left = {col_fl * GRID_SIZE, row_fl * GRID_SIZE};
+            sf::Vector2f top_right{col_fl * GRID_SIZE + GRID_SIZE, row_fl * GRID_SIZE};
+            sf::Vector2f bottom_left{col_fl * GRID_SIZE, row_fl * GRID_SIZE + GRID_SIZE};
+            sf::Vector2f bottom_right{col_fl * GRID_SIZE + GRID_SIZE, row_fl * GRID_SIZE + GRID_SIZE};
 
             columnValues.push_back(top_left);
 
-            _gridVertices[square_counter*6].position = top_left;
-            _gridVertices[square_counter*6].color = square_color;
-            _gridVertices[square_counter*6+1].position = top_right;
-            _gridVertices[square_counter*6+1].color = square_color;
-            _gridVertices[square_counter*6+2].position = bottom_right;
-            _gridVertices[square_counter*6+2].color = square_color;
+            _gridVertices[square_counter * 6].position = top_left;
+            _gridVertices[square_counter * 6].color = square_color;
+            _gridVertices[square_counter * 6 + 1].position = top_right;
+            _gridVertices[square_counter * 6 + 1].color = square_color;
+            _gridVertices[square_counter * 6 + 2].position = bottom_right;
+            _gridVertices[square_counter * 6 + 2].color = square_color;
 
-            _gridVertices[square_counter*6+3].position = top_left;
-            _gridVertices[square_counter*6+3].color = square_color;
-            _gridVertices[square_counter*6+4].position = bottom_right;
-            _gridVertices[square_counter*6+4].color = square_color;
-            _gridVertices[square_counter*6+5].position = bottom_left;
-            _gridVertices[square_counter*6+5].color = square_color;
+            _gridVertices[square_counter * 6 + 3].position = top_left;
+            _gridVertices[square_counter * 6 + 3].color = square_color;
+            _gridVertices[square_counter * 6 + 4].position = bottom_right;
+            _gridVertices[square_counter * 6 + 4].color = square_color;
+            _gridVertices[square_counter * 6 + 5].position = bottom_left;
+            _gridVertices[square_counter * 6 + 5].color = square_color;
 
             square_counter++;
-       }
-
-       _gridPositionsMatrix.push_back(columnValues);
+        }
     }
-}
-
-sf::VertexArray SnakeModel::get_vertices() const {
-    return _gridVertices;
-}
-
-sf::Vector2f SnakeModel::grid_pos_coordinates(const sf::Vector2u position) const {
-    return _gridPositionsMatrix.at(position.y).at(position.x);
-}
-
-sf::Vector2f SnakeModel::grid_pos_coordinates(const sf::Vector2u position, const SnakeModel::SquareLocation location_in_square ) const {
-    sf::Vector2f coords = _gridPositionsMatrix.at(position.y).at(position.x);
-    switch (location_in_square)
-    {
-    case SnakeModel::SquareLocation::TOP_LEFT:
-        return coords;
-    case SnakeModel::SquareLocation::TOP_RIGHT:
-        coords.x += _size;
-        return coords;
-    case SnakeModel::SquareLocation::BOTTOM_LEFT:
-        coords.y += _size;
-        return coords;
-    case SnakeModel::SquareLocation::BOTTOM_RIGHT:
-        coords.x += _size;
-        coords.y += _size;
-        return coords;
-    case SnakeModel::SquareLocation::TOP:
-        coords.x += _size/2;
-        return coords;
-    case SnakeModel::SquareLocation::BOTTOM:
-        coords.x += _size/2;
-        coords.y += _size;
-        return coords;
-    case SnakeModel::SquareLocation::LEFT:
-        coords.y += _size/2;
-        return coords;
-    case SnakeModel::SquareLocation::RIGHT:
-        coords.x += _size;
-        coords.y += _size/2;
-        return coords;
-    case SnakeModel::SquareLocation::CENTER:
-        coords.x += _size/2;
-        coords.y += _size/2;
-        return coords;
-    }
-
-    throw std::invalid_argument("Invalid location in square.");
-}
-
-void SnakeModel::move_entity(sf::Vector2u& entity, Direction direction) const {
-    switch (direction) {
-        case (Direction::UP):
-            if (entity.y > 0) {
-                entity.y -= 1;
-            }
-            break;
-        case (Direction::DOWN):
-            if (entity.y < _dimensions.y-1) {
-                entity.y += 1;
-            }
-            break;
-        case (Direction::LEFT):
-            if (entity.x > 0) {
-                entity.x -= 1;
-            }
-            break;
-        case (Direction::RIGHT):
-            if (entity.x < _dimensions.x-1) {
-                entity.x += 1;
-            }
-            break;
-    }
-}
-
-float SnakeModel::get_square_size() const {
-    return _size;
-}
-sf::Vector2u SnakeModel::get_dimensions() const {
-    return _dimensions;
 }
 
 void SnakeModel::create_fruit() {
-    sf::Vector2u position{rand() % _dimensions.x, rand() % _dimensions.y };
+    sf::Vector2i position{rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
 
-    while (!std::ranges::all_of(_fruitList, [position](const Fruit& fruit) {
-        return fruit.get_pos() != position;
+    while (!std::ranges::all_of(_fruitList, [position](const sf::Vector2i& fruit_pos) {
+        return fruit_pos != position;
     })) {
-        position = {rand() % _dimensions.x, rand() % _dimensions.y };
+        position = {rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
     }
-
-    _fruitList.emplace_back(this, position, _fruitTexture);
+    sf::Sprite sprite(*_textureHandler.get_texture("apple.png"));
+    sprite.setPosition(grid_pos_coordinates(position));
+    sf::Vector2f scale = {
+        GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),
+        GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().y)};
+    sprite.scale(scale);
+    _fruitSpriteList.push_back(sprite);
+    _fruitList.push_back(position);
 }
 
-std::vector<Fruit> SnakeModel::get_fruit_list() const {
+std::vector<sf::Vector2i> SnakeModel::get_fruit_list() const {
     return _fruitList;
 }
 
 void SnakeModel::destroy_fruit_index(int index) {
     _fruitList.erase(_fruitList.begin() + index);
+    _fruitSpriteList.erase(_fruitSpriteList.begin() + index);
 }
 
 void SnakeModel::draw_fruit(sf::RenderWindow& window) const {
-    for (const Fruit& fruit : _fruitList) {
-        window.draw(fruit.get_sprite());
+    for (const sf::Sprite& fruit : _fruitSpriteList) {
+        window.draw(fruit);
     };
 }
+
+//Getter Methods
+sf::VertexArray SnakeModel::get_vertices() const {return _gridVertices;}
+Player SnakeModel::get_player() const {return _player;}

@@ -1,7 +1,6 @@
 #pragma once 
 #include <SFML/Graphics.hpp>
-
-class SnakeModel;
+#include "SnakeModel.hpp"
 
 class Fruit {
 public:

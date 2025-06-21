@@ -2,52 +2,27 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "fruit.hpp"
+#include "player.hpp"
+#include "TextureHandler.hpp"
+#include "utility.hpp"
 
-enum class Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
-};
+constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};
 
-Direction get_direction_to(sf::Vector2u initial_grid, sf::Vector2u final_grid);
-Direction get_opposite(Direction direction);
-sf::Angle direction_to_angle(Direction direction);
-sf::Vector2f direction_to_vector(Direction direction, float magnitude);
-
-
-class SnakeModel {
+class SnakeModel
+{
     public:
-        enum class SquareLocation {
-            TOP_LEFT,
-            TOP_RIGHT,
-            BOTTOM_LEFT,
-            BOTTOM_RIGHT,
-            TOP,
-            BOTTOM,
-            LEFT,
-            RIGHT,
-            CENTER
-        };
-
-        SnakeModel(sf::Vector2u dimensions, float size);
+        SnakeModel();
     
         sf::VertexArray get_vertices() const;
-        sf::Vector2f grid_pos_coordinates(sf::Vector2u position) const;
-        sf::Vector2f grid_pos_coordinates(sf::Vector2u position, SnakeModel::SquareLocation location_in_square ) const;
-        void move_entity(sf::Vector2u& entity, Direction direction) const;
-        float get_square_size() const;
-        sf::Vector2u get_dimensions() const;
+        Player get_player() const;
         void create_fruit();
-        std::vector<Fruit> get_fruit_list() const;
+        std::vector<sf::Vector2i> get_fruit_list() const;
         void destroy_fruit_index(int index);
         void draw_fruit(sf::RenderWindow& window) const;
     private:
-        const sf::Vector2u _dimensions;
-        const float _size;
-        sf::Texture _fruitTexture;
+        TextureHandler _textureHandler;
+        Player _player;
         sf::VertexArray _gridVertices;
-        std::vector<Fruit> _fruitList;
-        std::vector<std::vector<sf::Vector2f>> _gridPositionsMatrix;
+        std::vector<sf::Sprite> _fruitSpriteList{};
+        std::vector<sf::Vector2i> _fruitList;
 };
