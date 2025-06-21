@@ -56,13 +56,13 @@ void SnakeController::play_game()
             if (!_inputBuffer.empty()) {
                 _model.get_player()->set_direction(*_get_next_direction());
             }
+            _model.get_player()->update();
             for (int i = 0; i < _model.get_fruit_list().size(); i++) {
                 if (_model.get_player()->get_position_grid() == _model.get_fruit_list().at(i)) {
                     _model.get_player()->increment_length();
                     _model.destroy_fruit_index(i);
                 }
             }
-            _model.get_player()->update();
             _model.create_fruit();
             timer.restart();
         }

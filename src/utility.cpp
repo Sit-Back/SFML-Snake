@@ -68,7 +68,7 @@ sf::Angle direction_to_angle(Direction direction) {
 }
 
 sf::Vector2f grid_pos_coordinates(const sf::Vector2i position) {
-    return {static_cast<float>(position.y) * GRID_SIZE, static_cast<float>(position.x)*GRID_SIZE};
+    return {static_cast<float>(position.x) * GRID_SIZE, static_cast<float>(position.y)*GRID_SIZE};
 }
 
 sf::Vector2f grid_pos_coordinates(

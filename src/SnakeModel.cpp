@@ -67,6 +67,7 @@ void SnakeModel::create_fruit() {
     })) {
         position = {rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
     }
+
     sf::Sprite sprite(*_textureHandler.get_texture("apple.png"));
     sprite.setPosition(grid_pos_coordinates(position));
     sf::Vector2f scale = {

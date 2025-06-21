@@ -3,6 +3,11 @@ project(game-snake)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -glldb")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -glldb")
+set(CMAKE_BUILD_TYPE Debug)
 
 find_package(SFML 3.0 COMPONENTS Graphics System Window REQUIRED)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
