@@ -7,9 +7,9 @@
 Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture)
 {
     _headPos = {11, 5};
-    _turnPosList.push_front(_headPos);
-    _length = INITIAL_PLAYER_LENGTH;
+    _bodyPositions.emplace_back(_headPos, _direction);
     _direction = Direction::RIGHT;
+    _length = INITIAL_PLAYER_LENGTH;
 
     // Head
     _head.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
@@ -38,6 +38,13 @@ Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture)
 void Player::update()
 {
     move_position(_headPos, _direction);
+    _bodyPositions.emplace_back(_headPos, _direction);
+
+    if (_bodyPositions.size() > _length)
+    {
+        _bodyPositions.pop_front();
+    }
+
     _head.setPosition(get_head_center());
     _eyeSprite.setPosition(get_head_center());
     _eyeSprite.setRotation(direction_to_angle(_direction));
@@ -48,7 +55,6 @@ void Player::update()
 void Player::set_direction(Direction direction)
 {
     _direction = direction;
-    _turnPosList.push_front(_headPos);
 }
 
 void Player::update_tail()
@@ -62,10 +68,10 @@ void Player::update_tail()
     int traversed_squares = 0;
     while (traversed_squares < _length - 1)
     {
-        if (_turnPosList.size() > corner_index + 1 && currentSearchPos == _turnPosList[corner_index])
+        if (_bodyPositions.size() > corner_index + 1 && currentSearchPos == _bodyPositions[corner_index].position)
         {
             Direction initialDirection = searchDirection;
-            searchDirection = get_direction_to(currentSearchPos, _turnPosList[corner_index + 1]);
+            searchDirection = get_direction_to(currentSearchPos, _bodyPositions[corner_index + 1].position);
             add_vertices(generate_circle_vertices(currentSearchPos, initialDirection, searchDirection));
             corner_index++;
         }
@@ -208,15 +214,15 @@ std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle ang
 
 bool Player::is_colliding(sf::Vector2i point) const
 {
-    if (point_in_rect(point, _headPos, _turnPosList[0]))
+    if (point_in_rect(point, _headPos, _bodyPositions[0].position))
     {
         return true;
     }
 
-    for (int i = 0; i < _turnPosList.size() - 1; i++)
+    for (int i = 0; i < _bodyPositions.size() - 1; i++)
     {
-        sf::Vector2i pos1 = _turnPosList[i];
-        sf::Vector2i pos2 = _turnPosList[i + 1];
+        sf::Vector2i pos1 = _bodyPositions[i].position;
+        sf::Vector2i pos2 = _bodyPositions[i + 1].position;
 
         if (point_in_rect(point, pos1, pos2))
         {

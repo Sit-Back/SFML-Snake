@@ -11,6 +11,12 @@ constexpr int TURN_RESOLUTION = 10;
 constexpr int INITIAL_PLAYER_LENGTH = 4;
 constexpr float PLAYER_WIDTH = 40;
 
+struct bodyPos
+{
+    sf::Vector2i position;
+    Direction direction;
+};
+
 std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle);
 SquareLocation travel_entry(Direction search_dir);
 
@@ -43,7 +49,7 @@ class Player final : public sf::Drawable {
         int _length;
 
         //Tail Variables
-        std::deque<sf::Vector2i> _turnPosList;
+        std::deque<bodyPos> _bodyPositions;
         sf::VertexArray _tailStrip;
         
         //Methods
