@@ -10,6 +10,11 @@ SnakeModel::SnakeModel() :
         sf::PrimitiveType::Triangles,
         GRID_DIMENSIONS.x * GRID_DIMENSIONS.y * 6)
 {
+    generate_grid_vertices();
+}
+
+void SnakeModel::generate_grid_vertices()
+{
     int square_counter = 0;
 
     for (int row = 0; row < GRID_DIMENSIONS.y; row++)
@@ -59,6 +64,8 @@ SnakeModel::SnakeModel() :
     }
 }
 
+////Fruit Methods
+//
 void SnakeModel::create_fruit() {
     sf::Vector2i position{rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
 
@@ -78,10 +85,6 @@ void SnakeModel::create_fruit() {
     _fruitList.push_back(position);
 }
 
-std::vector<sf::Vector2i> SnakeModel::get_fruit_list() const {
-    return _fruitList;
-}
-
 void SnakeModel::destroy_fruit_index(int index) {
     _fruitList.erase(_fruitList.begin() + index);
     _fruitSpriteList.erase(_fruitSpriteList.begin() + index);
@@ -93,6 +96,8 @@ void SnakeModel::draw_fruit(sf::RenderWindow& window) const {
     };
 }
 
-//Getter Methods
+////Getter Methods
+//
 sf::VertexArray SnakeModel::get_vertices() const {return _gridVertices;}
 Player* SnakeModel::get_player() {return &_player;}
+std::vector<sf::Vector2i> SnakeModel::get_fruit_list() const {return _fruitList;}

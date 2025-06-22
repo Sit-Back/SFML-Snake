@@ -14,7 +14,7 @@ TextureHandler::TextureHandler(const std::vector<std::string>& initial_textures 
 
 TextureHandler::TextureHandler() = default;
 
-void TextureHandler::load_texture(std::string texture_path)
+void TextureHandler::load_texture(const std::string& texture_path)
 {
     if (sf::Texture texture; texture.loadFromFile(ASSET_PATH / texture_path)) {
         _textures[texture_path] = texture;
@@ -24,7 +24,7 @@ void TextureHandler::load_texture(std::string texture_path)
     }
 }
 
-sf::Texture* TextureHandler::get_texture(std::string texture_path)
+sf::Texture* TextureHandler::get_texture(const std::string& texture_path)
 {
     if (!_textures.contains(texture_path)) load_texture(texture_path);
 
