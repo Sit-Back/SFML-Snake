@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "utility.hpp"
 
+
 SnakeModel::SnakeModel() :
     _player(_textureHandler.get_texture("eyes.png")),
     _gridVertices(
@@ -69,11 +70,18 @@ void SnakeModel::generate_grid_vertices()
 void SnakeModel::create_fruit() {
     sf::Vector2i position{rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
 
+    auto bodypositions = _player.get_body_positions();
     while (
-        !std::ranges::all_of(
+        std::ranges::any_of(
             _fruitList,
             [position](const sf::Vector2i& fruit_pos)
-            {return fruit_pos != position;}
+            {return fruit_pos == position;}
+        )
+        ||  std::any_of(
+            bodypositions.begin(),
+            bodypositions.end(),
+            [position](bodyPos segment)
+            {return segment.position == position;}
         )
     )
     {

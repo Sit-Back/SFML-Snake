@@ -6,10 +6,19 @@
 
 Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture)
 {
-    _headPos = {11, 5};
-    _bodyPositions.emplace_back(_headPos, _direction);
+    _headPos = {5, 7};
     _direction = Direction::RIGHT;
     _length = INITIAL_PLAYER_LENGTH;
+
+    sf::Vector2i pos = _headPos;
+    for (int i = 0; i < _length; i++)
+    {
+        _bodyPositions.emplace_back(pos, _direction);
+        move_position(pos, get_opposite(_direction));
+    }
+
+
+
 
     // Head
     _head.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
@@ -38,11 +47,11 @@ Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture)
 void Player::update()
 {
     move_position(_headPos, _direction);
-    _bodyPositions.emplace_back(_headPos, _direction);
+    _bodyPositions.emplace_front(_headPos, _direction);
 
     if (_bodyPositions.size() > _length)
     {
-        _bodyPositions.pop_front();
+        _bodyPositions.pop_back();
     }
 
     _head.setPosition(get_head_center());
@@ -59,31 +68,35 @@ void Player::set_direction(Direction direction)
 
 void Player::update_tail()
 {
-    sf::Vector2i currentSearchPos = _headPos;
-    Direction searchDirection = get_opposite(_direction);
     _tailStrip.clear();
-    add_vertices(calc_width_vertex(get_head_center(), direction_to_angle(searchDirection)));
 
-    int corner_index = 0;
-    int traversed_squares = 0;
-    while (traversed_squares < _length - 1)
+    Direction previousDirection = get_opposite(_bodyPositions[0].direction);
+    for (int i = 0; i < _bodyPositions.size()-1; i++)
     {
-        if (_bodyPositions.size() > corner_index + 1 && currentSearchPos == _bodyPositions[corner_index].position)
-        {
-            Direction initialDirection = searchDirection;
-            searchDirection = get_direction_to(currentSearchPos, _bodyPositions[corner_index + 1].position);
-            add_vertices(generate_circle_vertices(currentSearchPos, initialDirection, searchDirection));
-            corner_index++;
-        }
+        const sf::Vector2i position = _bodyPositions[i].position;
+        const Direction direction = get_opposite(_bodyPositions[i].direction);
 
-        move_position(currentSearchPos, searchDirection);
-        sf::Vector2f vertexOrigin = grid_pos_coordinates(currentSearchPos, travel_entry(searchDirection));
-        add_vertices(calc_width_vertex(vertexOrigin, direction_to_angle(searchDirection)));
-        traversed_squares++;
+        if (previousDirection != direction)
+        {
+            add_vertices(generate_circle_vertices(position, previousDirection, direction));
+        } else
+        {
+            add_vertices(calc_width_vertex
+            (
+                grid_pos_coordinates(position, SquareLocation::CENTER),
+                direction_to_angle(direction))
+            );
+        }
+        previousDirection = get_opposite(_bodyPositions[i].direction);
     }
-    sf::Vector2f endPos = grid_pos_coordinates(currentSearchPos, SquareLocation::CENTER);
-    add_vertices(calc_width_vertex(endPos, direction_to_angle(searchDirection)));
-    _end.setPosition(endPos);
+
+    sf::Vector2i endpos = _bodyPositions[_bodyPositions.size()-1].position;
+    add_vertices(calc_width_vertex
+            (
+                grid_pos_coordinates(endpos, SquareLocation::CENTER),
+                direction_to_angle(previousDirection))
+            );
+    _end.setPosition(grid_pos_coordinates(endpos, SquareLocation::CENTER));
 }
 
 //Support Functions
@@ -212,26 +225,10 @@ std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle ang
     return std::vector<sf::Vector2f>{pos1, pos2};
 }
 
-bool Player::is_colliding(sf::Vector2i point) const
+std::deque<bodyPos> Player::get_body_positions() const
 {
-    if (point_in_rect(point, _headPos, _bodyPositions[0].position))
-    {
-        return true;
-    }
-
-    for (int i = 0; i < _bodyPositions.size() - 1; i++)
-    {
-        sf::Vector2i pos1 = _bodyPositions[i].position;
-        sf::Vector2i pos2 = _bodyPositions[i + 1].position;
-
-        if (point_in_rect(point, pos1, pos2))
-        {
-            return true;
-        }
-    }
-    return false;
+    return _bodyPositions;
 }
-
 
 // Getter Functions
 int Player::get_length() const { return _length; }

@@ -34,6 +34,7 @@ class Player final : public sf::Drawable {
 
         //Getter Methods
         sf::Vector2f get_position() const;
+        std::deque<bodyPos> get_body_positions() const;
         sf::Vector2i get_position_grid() const;
         sf::Vector2f get_head_center() const;
         Direction  get_move_direction() const;

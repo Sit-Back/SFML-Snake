@@ -1,5 +1,7 @@
 #include "SnakeController.hpp"
 
+#include <iostream>
+
 SnakeController::SnakeController() :
     _model(),
     _window(
@@ -21,6 +23,27 @@ void SnakeController::_draw_game()
     _window.draw(*_model.get_player());
     _model.draw_fruit(_window);
     _window.display();
+}
+
+bool SnakeController::has_lost()
+{
+    const auto player = *_model.get_player();
+    auto headpos = player.get_position_grid();
+    auto bodypositions = player.get_body_positions();
+
+    const bool colliding = std::any_of(
+        bodypositions.begin()+1,
+        bodypositions.end(),
+        [headpos](bodyPos segment)
+        {return segment.position == headpos;}
+    );
+
+    if (colliding) return true;
+
+    sf::Vector2i corner = {GRID_DIMENSIONS.x-1, GRID_DIMENSIONS.y-1};
+    if (!point_in_rect(headpos, {0,0}, corner)) return true;
+
+    return false;
 }
 
 void SnakeController::_process_events()
@@ -72,7 +95,14 @@ void SnakeController::play_game()
             timer.restart();
         }
 
-        _draw_game();
+        if (has_lost())
+        {
+            _model = SnakeModel();
+        } else
+        {
+            _draw_game();
+        }
+
     }
 }
 
