@@ -129,3 +129,24 @@ void move_position(sf::Vector2i& initialpos, const Direction direction) {
         break;
     }
 }
+
+bool point_in_rect(sf::Vector2i point, sf::Vector2i pos1, sf::Vector2i pos2)
+{
+    const int max_x = std::max(pos1.x, pos2.x);
+    const int min_x = std::min(pos1.x, pos2.x);
+    const int max_y = std::max(pos1.y, pos2.y);
+    const int min_y = std::min(pos1.y, pos2.y);
+
+    if (
+        point.x <= max_x
+        && point.x >= min_x
+        && point.y <= max_y
+        && point.y >= min_y
+    )
+    {
+        return true;
+    } else
+    {
+        return false;
+    }
+}

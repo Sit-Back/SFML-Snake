@@ -69,9 +69,14 @@ void SnakeModel::generate_grid_vertices()
 void SnakeModel::create_fruit() {
     sf::Vector2i position{rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
 
-    while (!std::ranges::all_of(_fruitList, [position](const sf::Vector2i& fruit_pos) {
-        return fruit_pos != position;
-    })) {
+    while (
+        !std::ranges::all_of(
+            _fruitList,
+            [position](const sf::Vector2i& fruit_pos)
+            {return fruit_pos != position;}
+        )
+    )
+    {
         position = {rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
     }
 

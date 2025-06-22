@@ -24,6 +24,7 @@ class Player final : public sf::Drawable {
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void increment_length();
         void set_direction(Direction direction);
+        bool is_colliding(sf::Vector2i point) const;
 
         //Getter Methods
         sf::Vector2f get_position() const;

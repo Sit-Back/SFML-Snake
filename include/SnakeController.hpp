@@ -10,7 +10,7 @@ class SnakeController
 {
 public:
     SnakeController();
-    void update_display();
+    void _draw_game();
     void play_game();
 
 private:
@@ -18,5 +18,6 @@ private:
     std::queue<Direction> _inputBuffer;
     sf::RenderWindow _window;
     void _add_move_to_buffer(Direction move);
+    void _process_events();
     std::optional<Direction> _get_next_direction();
 };
