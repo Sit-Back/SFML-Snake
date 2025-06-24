@@ -5,7 +5,8 @@
 #include "utility.hpp"
 
 
-SnakeModel::SnakeModel() :
+SnakeModel::SnakeModel(AssetHandler* texture_handler) :
+    _textureHandler(*texture_handler),
     _player(_textureHandler.get_texture("eyes.png")),
     _gridVertices(
         sf::PrimitiveType::Triangles,

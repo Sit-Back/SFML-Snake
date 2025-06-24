@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "player.hpp"
-#include "TextureHandler.hpp"
+#include "AssetHandler.hpp"
 
 constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};
 
@@ -11,7 +11,7 @@ class SnakeModel
 {
     public:
         //Generators
-        SnakeModel();
+        SnakeModel(AssetHandler* texture_handler);
 
         //Fruit Methods
         void create_fruit();
@@ -25,11 +25,12 @@ class SnakeModel
 
     private:
         //Member Variables
-        TextureHandler _textureHandler;
+        AssetHandler _textureHandler;
         Player _player;
         sf::VertexArray _gridVertices;
         std::vector<sf::Sprite> _fruitSpriteList{};
         std::vector<sf::Vector2i> _fruitList;
+
 
         //General Methods
         void generate_grid_vertices();

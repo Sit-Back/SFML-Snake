@@ -3,7 +3,7 @@
 #include <iostream>
 
 SnakeController::SnakeController() :
-    _model(),
+    _model(&_textureHandler),
     _window(
         sf::VideoMode(WINDOW_DIMENSIONS),
         GAME_TITLE,
@@ -22,7 +22,6 @@ void SnakeController::_draw_game()
     _window.draw(_model.get_vertices());
     _window.draw(*_model.get_player());
     _model.draw_fruit(_window);
-    _window.display();
 }
 
 bool SnakeController::has_lost()
@@ -46,7 +45,7 @@ bool SnakeController::has_lost()
     return false;
 }
 
-void SnakeController::_process_events()
+void SnakeController::_process_game_events()
 {
     while (const  std::optional<sf::Event> event = _window.pollEvent())
     {
@@ -73,36 +72,62 @@ void SnakeController::_process_events()
     }
 }
 
+void SnakeController::_process_menu_events()
+{
+    while (const  std::optional<sf::Event> event = _window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>()) {
+            _window.close();
+        }
+    }
+}
+
+void SnakeController::play_snake()
+{
+    _process_game_events();
+
+    if (_timer.getElapsedTime().asSeconds() > UPDATE_RATE) {
+        if (!_inputBuffer.empty()) {
+            _model.get_player()->set_direction(*_get_next_direction());
+        }
+        _model.get_player()->update();
+        for (int i = 0; i < _model.get_fruit_list().size(); i++) {
+            if (_model.get_player()->get_position_grid() == _model.get_fruit_list().at(i)) {
+                _model.get_player()->increment_length();
+                _model.destroy_fruit_index(i);
+            }
+        }
+        _model.create_fruit();
+        _timer.restart();
+    }
+
+    if (has_lost())
+    {
+        _model = SnakeModel(&_textureHandler);
+        _gamestate = GameState::OVER;
+    } else
+    {
+        _draw_game();
+    }
+}
+
+void SnakeController::game_over()
+{
+
+}
+
 void SnakeController::play_game()
 {
-    sf::Clock timer;
     while (_window.isOpen())
     {
-        _process_events();
-
-        if (timer.getElapsedTime().asSeconds() > UPDATE_RATE) {
-            if (!_inputBuffer.empty()) {
-                _model.get_player()->set_direction(*_get_next_direction());
-            }
-            _model.get_player()->update();
-            for (int i = 0; i < _model.get_fruit_list().size(); i++) {
-                if (_model.get_player()->get_position_grid() == _model.get_fruit_list().at(i)) {
-                    _model.get_player()->increment_length();
-                    _model.destroy_fruit_index(i);
-                }
-            }
-            _model.create_fruit();
-            timer.restart();
-        }
-
-        if (has_lost())
+        switch (_gamestate)
         {
-            _model = SnakeModel();
-        } else
-        {
-            _draw_game();
+        case GameState::GAME:
+            play_snake();
+        case GameState::OVER:
+            game_over();
         }
-
+        _window.display();
     }
 }
 
