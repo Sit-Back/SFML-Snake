@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include "AssetHandler.hpp"
 
 AssetHandler::AssetHandler(const std::vector<std::string>& initialTextures )
@@ -38,10 +39,10 @@ void AssetHandler::loadFont(const std::string& fontPath)
     }
 }
 
-sf::Texture* AssetHandler::getFont(const std::string& fontPath)
+sf::Font* AssetHandler::getFont(const std::string& fontPath)
 {
-    if (!m_loadedTextures.contains(fontPath)) loadTexture(fontPath);
+    if (!m_loadedTextures.contains(fontPath)) loadFont(fontPath);
 
-    return &m_loadedTextures.at(fontPath);
+    return &m_loadedFonts.at(fontPath);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <queue>
 #include "SnakeModel.hpp"
+#include "Button.hpp"
 
 constexpr float UPDATE_RATE = 0.15;
 const std::string GAME_TITLE = "Snake Game";
@@ -33,5 +34,8 @@ private:
     std::optional<Direction> getNextDirection();
     void processGameEvents();
     void processMenuEvents();
+    void startSnake();
     void drawGame(); 
+
+    Button m_testButton;
 };

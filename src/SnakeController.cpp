@@ -1,11 +1,20 @@
 #include "SnakeController.hpp"
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 
 SnakeController::SnakeController() :
     m_model(&m_textureHandler),
     m_window(
         sf::VideoMode(WINDOW_DIMENSIONS),
         GAME_TITLE,
-        sf::Style::Titlebar | sf::Style::Close)
+        sf::Style::Titlebar | sf::Style::Close),
+    m_testButton
+(
+        {0,0}, 
+        "Play",
+        m_textureHandler.getFont("ui-font.ttf"),
+        [this]() {startSnake();}
+)
 {
     m_window.setVerticalSyncEnabled(true);
     m_window.setKeyRepeatEnabled(false);
@@ -13,6 +22,11 @@ SnakeController::SnakeController() :
     sf::View gridView(sf::FloatRect({0, 0}, {800, 800}));
     m_window.setView(gridView);
 }
+
+void SnakeController::startSnake() {
+    m_gameState = GameState::GAME;
+}
+
 
 void SnakeController::drawGame()
 {
@@ -49,8 +63,8 @@ void SnakeController::processGameEvents()
     {
         if (event->is<sf::Event::Closed>()) {
             m_window.close();
-        } else if (const auto* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
-            switch (key_pressed->code)
+        } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+            switch (keyPressed->code)
             {
             case sf::Keyboard::Key::Left:
                 addMoveToBuffer(Direction::LEFT);
@@ -76,6 +90,10 @@ void SnakeController::processMenuEvents()
     {
         if (event->is<sf::Event::Closed>()) {
             m_window.close();
+        } else if (const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
+            if (mouseEvent->button == sf::Mouse::Button::Left) {
+                m_testButton.handleMouseClick(m_window.mapPixelToCoords(mouseEvent->position));
+            }
         }
     }
 }
@@ -111,7 +129,10 @@ void SnakeController::playSnake()
 
 void SnakeController::gameOver()
 {
+    processMenuEvents();
 
+    m_window.clear();
+    m_window.draw(m_testButton);
 }
 
 void SnakeController::playGame()
@@ -122,8 +143,10 @@ void SnakeController::playGame()
         {
         case GameState::GAME:
             playSnake();
+            break;
         case GameState::OVER:
             gameOver();
+            break;
         }
         m_window.display();
     }

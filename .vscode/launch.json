@@ -9,6 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/game-snake",
+            "preLaunchTask": "Build CMake Project"
         }
     ]
 }
