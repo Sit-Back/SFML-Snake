@@ -1,4 +1,3 @@
-#include <queue>
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "player.hpp"

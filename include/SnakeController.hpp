@@ -1,11 +1,21 @@
 #pragma once
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <queue>
+#include <vector>
 #include "SnakeModel.hpp"
 #include "Button.hpp"
 
 constexpr float UPDATE_RATE = 0.15;
 const std::string GAME_TITLE = "Snake Game";
 constexpr sf::Vector2u WINDOW_DIMENSIONS = {800, 800};
+
+struct Menu
+{
+    sf::Sprite logo;
+    sf::Text subtext;
+    std::vector<Button> buttons;
+};
 
 class SnakeController
 {
@@ -33,9 +43,7 @@ private:
     void addMoveToBuffer(Direction move);
     std::optional<Direction> getNextDirection();
     void processGameEvents();
-    void processMenuEvents();
+    void processMenuEvents(std::vector<Button> buttons);
     void startSnake();
     void drawGame(); 
-
-    Button m_testButton;
 };

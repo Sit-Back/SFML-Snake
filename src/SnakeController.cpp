@@ -1,20 +1,16 @@
 #include "SnakeController.hpp"
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <ctime>
+#include <vector>
 
 SnakeController::SnakeController() :
     m_model(&m_textureHandler),
     m_window(
         sf::VideoMode(WINDOW_DIMENSIONS),
         GAME_TITLE,
-        sf::Style::Titlebar | sf::Style::Close),
-    m_testButton
-(
-        {0,0}, 
-        "Play",
-        m_textureHandler.getFont("ui-font.ttf"),
-        [this]() {startSnake();}
-)
+        sf::Style::Titlebar | sf::Style::Close)
 {
     m_window.setVerticalSyncEnabled(true);
     m_window.setKeyRepeatEnabled(false);
@@ -84,7 +80,7 @@ void SnakeController::processGameEvents()
     }
 }
 
-void SnakeController::processMenuEvents()
+void SnakeController::processMenuEvents(std::vector<Button> buttons)
 {
     while (const  std::optional<sf::Event> event = m_window.pollEvent())
     {
@@ -92,7 +88,10 @@ void SnakeController::processMenuEvents()
             m_window.close();
         } else if (const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (mouseEvent->button == sf::Mouse::Button::Left) {
-                m_testButton.handleMouseClick(m_window.mapPixelToCoords(mouseEvent->position));
+                sf::Vector2f clickCoords = m_window.mapPixelToCoords(mouseEvent->position);
+                for (Button button : buttons) {
+                    button.handleMouseClick(clickCoords);
+                }
             }
         }
     }
@@ -129,10 +128,6 @@ void SnakeController::playSnake()
 
 void SnakeController::gameOver()
 {
-    processMenuEvents();
-
-    m_window.clear();
-    m_window.draw(m_testButton);
 }
 
 void SnakeController::playGame()
