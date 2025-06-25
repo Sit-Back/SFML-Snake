@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "player.hpp"
+#include "Player.hpp"
 #include "AssetHandler.hpp"
 
 constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};

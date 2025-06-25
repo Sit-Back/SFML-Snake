@@ -1,6 +1,6 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
-#include "player.hpp"
+#include "Player.hpp"
 #include "utility.hpp"
 
 Player::Player(const sf::Texture* eyeTexture) : m_eyeSprite(*eyeTexture)
@@ -15,9 +15,6 @@ Player::Player(const sf::Texture* eyeTexture) : m_eyeSprite(*eyeTexture)
         m_bodyPositions.emplace_back(pos, m_direction);
         shiftPosition(pos, getOpposite(m_direction));
     }
-
-
-
 
     // Head
     m_head.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});

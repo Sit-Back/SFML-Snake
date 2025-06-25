@@ -2,7 +2,6 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <ctime>
 #include <vector>
 
 SnakeController::SnakeController() :
