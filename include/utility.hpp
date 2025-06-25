@@ -23,12 +23,12 @@ enum class SquareLocation {
     CENTER
 };
 
-Direction get_direction_to(sf::Vector2i initial_grid, sf::Vector2i final_grid);
-Direction get_opposite(Direction direction);
-sf::Angle direction_to_angle(Direction direction);
-sf::Vector2f direction_to_vector(Direction direction, float magnitude);
-sf::Vector2f grid_pos_coordinates(sf::Vector2i position);
-sf::Vector2f grid_pos_coordinates(sf::Vector2i position, SquareLocation location_in_square);
-void move_position(sf::Vector2i& initialpos, Direction direction);
-sf::Vector2f rotate_vector(sf::Vector2f initialVector, sf::Angle angleOfRotation);
-bool point_in_rect(sf::Vector2i point, sf::Vector2i pos1, sf::Vector2i pos2);
+Direction getDirectionTo(sf::Vector2i initialGrid, sf::Vector2i finalGrid);
+Direction getOpposite(Direction direction);
+sf::Angle directionToAngle(Direction direction);
+sf::Vector2f directionToVector(Direction direction, float magnitude);
+sf::Vector2f gridCoordinates(sf::Vector2i position);
+sf::Vector2f gridCoordinates(sf::Vector2i position, SquareLocation locationInSquare);
+void shiftPosition(sf::Vector2i& initialPosition, Direction direction);
+sf::Vector2f rotateVector(sf::Vector2f initialVector, sf::Angle angleOfRotation);
+bool pointInRect(sf::Vector2i point, sf::Vector2i pos1, sf::Vector2i pos2);

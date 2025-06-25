@@ -1,50 +1,47 @@
-#include <map>
 #include <SFML/Graphics.hpp>
 #include "AssetHandler.hpp"
 
-#include <iostream>
-
-AssetHandler::AssetHandler(const std::vector<std::string>& initial_textures )
+AssetHandler::AssetHandler(const std::vector<std::string>& initialTextures )
 {
-    for (const auto& texture : initial_textures)
+    for (const auto& texture : initialTextures)
 {
-        load_texture(texture);
+        loadTexture(texture);
     }
 }
 
 AssetHandler::AssetHandler() = default;
 
-void AssetHandler::load_texture(const std::string& texture_path)
+void AssetHandler::loadTexture(const std::string& texturePath)
 {
-    if (sf::Texture texture; texture.loadFromFile(ASSET_PATH / texture_path)) {
-        _textures[texture_path] = texture;
+    if (sf::Texture texture; texture.loadFromFile(ASSET_PATH / texturePath)) {
+        m_loadedTextures[texturePath] = texture;
     } else
     {
-        throw std::runtime_error("Asset not found: " + texture_path);
+        throw std::runtime_error("Asset not found: " + texturePath);
     }
 }
 
-sf::Texture* AssetHandler::get_texture(const std::string& texture_path)
+sf::Texture* AssetHandler::getTexture(const std::string& texturePath)
 {
-    if (!_textures.contains(texture_path)) load_texture(texture_path);
+    if (!m_loadedTextures.contains(texturePath)) loadTexture(texturePath);
 
-    return &_textures.at(texture_path);
+    return &m_loadedTextures.at(texturePath);
 }
 
-void AssetHandler::load_font(const std::string& font_path)
+void AssetHandler::loadFont(const std::string& fontPath)
 {
-    if (sf::Font font; font.openFromFile(ASSET_PATH / font_path)) {
-        _fonts[font_path] = font;
+    if (sf::Font font; font.openFromFile(ASSET_PATH / fontPath)) {
+        m_loadedFonts[fontPath] = font;
     } else
     {
-        throw std::runtime_error("Asset not found: " + font_path);
+        throw std::runtime_error("Asset not found: " + fontPath);
     }
 }
 
-sf::Texture* AssetHandler::get_font(const std::string& font_path)
+sf::Texture* AssetHandler::getFont(const std::string& fontPath)
 {
-    if (!_textures.contains(font_path)) load_texture(font_path);
+    if (!m_loadedTextures.contains(fontPath)) loadTexture(fontPath);
 
-    return &_textures.at(font_path);
+    return &m_loadedTextures.at(fontPath);
 }
 

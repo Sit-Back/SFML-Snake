@@ -3,5 +3,5 @@
 int main()
 {
     SnakeController game;
-    game.play_game();
+    game.playGame();
 }

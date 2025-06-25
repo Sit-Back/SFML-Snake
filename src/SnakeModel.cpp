@@ -1,21 +1,20 @@
 #include "SnakeModel.hpp"
 #include <SFML/Graphics.hpp>
-#include <cmath>
 #include <algorithm>
 #include "utility.hpp"
 
 
 SnakeModel::SnakeModel(AssetHandler* texture_handler) :
-    _textureHandler(*texture_handler),
-    _player(_textureHandler.get_texture("eyes.png")),
-    _gridVertices(
+    m_textureHandler(*texture_handler),
+    m_player(m_textureHandler.getTexture("eyes.png")),
+    m_gridVertices(
         sf::PrimitiveType::Triangles,
         GRID_DIMENSIONS.x * GRID_DIMENSIONS.y * 6)
 {
-    generate_grid_vertices();
+    generateGridVertices();
 }
 
-void SnakeModel::generate_grid_vertices()
+void SnakeModel::generateGridVertices()
 {
     int square_counter = 0;
 
@@ -47,19 +46,19 @@ void SnakeModel::generate_grid_vertices()
 
             columnValues.push_back(top_left);
 
-            _gridVertices[square_counter * 6].position = top_left;
-            _gridVertices[square_counter * 6].color = square_color;
-            _gridVertices[square_counter * 6 + 1].position = top_right;
-            _gridVertices[square_counter * 6 + 1].color = square_color;
-            _gridVertices[square_counter * 6 + 2].position = bottom_right;
-            _gridVertices[square_counter * 6 + 2].color = square_color;
+            m_gridVertices[square_counter * 6].position = top_left;
+            m_gridVertices[square_counter * 6].color = square_color;
+            m_gridVertices[square_counter * 6 + 1].position = top_right;
+            m_gridVertices[square_counter * 6 + 1].color = square_color;
+            m_gridVertices[square_counter * 6 + 2].position = bottom_right;
+            m_gridVertices[square_counter * 6 + 2].color = square_color;
 
-            _gridVertices[square_counter * 6 + 3].position = top_left;
-            _gridVertices[square_counter * 6 + 3].color = square_color;
-            _gridVertices[square_counter * 6 + 4].position = bottom_right;
-            _gridVertices[square_counter * 6 + 4].color = square_color;
-            _gridVertices[square_counter * 6 + 5].position = bottom_left;
-            _gridVertices[square_counter * 6 + 5].color = square_color;
+            m_gridVertices[square_counter * 6 + 3].position = top_left;
+            m_gridVertices[square_counter * 6 + 3].color = square_color;
+            m_gridVertices[square_counter * 6 + 4].position = bottom_right;
+            m_gridVertices[square_counter * 6 + 4].color = square_color;
+            m_gridVertices[square_counter * 6 + 5].position = bottom_left;
+            m_gridVertices[square_counter * 6 + 5].color = square_color;
 
             square_counter++;
         }
@@ -68,20 +67,20 @@ void SnakeModel::generate_grid_vertices()
 
 ////Fruit Methods
 //
-void SnakeModel::create_fruit() {
+void SnakeModel::createFruit() {
     sf::Vector2i position{rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
 
-    auto bodypositions = _player.get_body_positions();
+    auto bodypositions = m_player.getBodyPositions();
     while (
         std::ranges::any_of(
-            _fruitList,
+            m_fruitList,
             [position](const sf::Vector2i& fruit_pos)
             {return fruit_pos == position;}
         )
         ||  std::any_of(
             bodypositions.begin(),
             bodypositions.end(),
-            [position](bodyPos segment)
+            [position](BodyPos segment)
             {return segment.position == position;}
         )
     )
@@ -89,29 +88,29 @@ void SnakeModel::create_fruit() {
         position = {rand() % GRID_DIMENSIONS.x, rand() % GRID_DIMENSIONS.y };
     }
 
-    sf::Sprite sprite(*_textureHandler.get_texture("apple.png"));
-    sprite.setPosition(grid_pos_coordinates(position));
+    sf::Sprite sprite(*m_textureHandler.getTexture("apple.png"));
+    sprite.setPosition(gridCoordinates(position));
     sf::Vector2f scale = {
         GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),
         GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().y)};
     sprite.scale(scale);
-    _fruitSpriteList.push_back(sprite);
-    _fruitList.push_back(position);
+    m_fruitSpriteList.push_back(sprite);
+    m_fruitList.push_back(position);
 }
 
-void SnakeModel::destroy_fruit_index(int index) {
-    _fruitList.erase(_fruitList.begin() + index);
-    _fruitSpriteList.erase(_fruitSpriteList.begin() + index);
+void SnakeModel::destroyFruitIndex(int index) {
+    m_fruitList.erase(m_fruitList.begin() + index);
+    m_fruitSpriteList.erase(m_fruitSpriteList.begin() + index);
 }
 
-void SnakeModel::draw_fruit(sf::RenderWindow& window) const {
-    for (const sf::Sprite& fruit : _fruitSpriteList) {
+void SnakeModel::drawFruit(sf::RenderWindow& window) const {
+    for (const sf::Sprite& fruit : m_fruitSpriteList) {
         window.draw(fruit);
     };
 }
 
 ////Getter Methods
 //
-sf::VertexArray SnakeModel::get_vertices() const {return _gridVertices;}
-Player* SnakeModel::get_player() {return &_player;}
-std::vector<sf::Vector2i> SnakeModel::get_fruit_list() const {return _fruitList;}
+sf::VertexArray SnakeModel::getVertices() const {return m_gridVertices;}
+Player* SnakeModel::getPlayer() {return &m_player;}
+std::vector<sf::Vector2i> SnakeModel::getFruitList() const {return m_fruitList;}

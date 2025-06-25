@@ -11,14 +11,14 @@ constexpr int TURN_RESOLUTION = 10;
 constexpr int INITIAL_PLAYER_LENGTH = 4;
 constexpr float PLAYER_WIDTH = 40;
 
-struct bodyPos
+struct BodyPos
 {
     sf::Vector2i position;
     Direction direction;
 };
 
-std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle);
-SquareLocation travel_entry(Direction search_dir);
+std::vector<sf::Vector2f> calcWidthVertex(sf::Vector2f position, sf::Angle angle);
+SquareLocation travelEntry(Direction search_dir);
 
 class Player final : public sf::Drawable {
     public:
@@ -28,32 +28,32 @@ class Player final : public sf::Drawable {
 
         //General Methods
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        void increment_length();
-        void set_direction(Direction direction);
+        void incrementLength();
+        void setDirection(Direction direction);
 
         //Getter Methods
-        sf::Vector2f get_position() const;
-        std::deque<bodyPos> get_body_positions() const;
-        sf::Vector2i get_position_grid() const;
-        sf::Vector2f get_head_center() const;
-        Direction  get_move_direction() const;
-        int get_length() const;
+        sf::Vector2f getPosition() const;
+        std::deque<BodyPos> getBodyPositions() const;
+        sf::Vector2i getPositionGrid() const;
+        sf::Vector2f getHeadCenter() const;
+        Direction  getMoveDirection() const;
+        int getLength() const;
 
     private:
         //General Variables
-        sf::CircleShape _head;
-        sf::CircleShape _end;
-        sf::Vector2i _headPos;
-        sf::Sprite _eyeSprite;
-        Direction _direction;
-        int _length;
+        sf::CircleShape m_head;
+        sf::CircleShape m_end;
+        sf::Vector2i m_headPos;
+        sf::Sprite m_eyeSprite;
+        Direction m_direction;
+        int m_length;
 
         //Tail Variables
-        std::deque<bodyPos> _bodyPositions;
-        sf::VertexArray _tailStrip;
+        std::deque<BodyPos> m_bodyPositions;
+        sf::VertexArray m_tailStrip;
         
         //Methods
-        std::vector<sf::Vector2f> generate_circle_vertices(sf::Vector2i initialPos, Direction initialDirection, Direction finalPosition) const;
-        void add_vertices(const std::vector<sf::Vector2f>& points);
-        void update_tail();
+        std::vector<sf::Vector2f> generateCircleVertices(sf::Vector2i initialPos, Direction initialDirection, Direction finalPosition) const;
+        void addVertices(const std::vector<sf::Vector2f>& points);
+        void updateTail();
 };

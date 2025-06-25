@@ -4,103 +4,103 @@
 #include "player.hpp"
 #include "utility.hpp"
 
-Player::Player(const sf::Texture* eyeTexture) : _eyeSprite(*eyeTexture)
+Player::Player(const sf::Texture* eyeTexture) : m_eyeSprite(*eyeTexture)
 {
-    _headPos = {5, 7};
-    _direction = Direction::RIGHT;
-    _length = INITIAL_PLAYER_LENGTH;
+    m_headPos = {5, 7};
+    m_direction = Direction::RIGHT;
+    m_length = INITIAL_PLAYER_LENGTH;
 
-    sf::Vector2i pos = _headPos;
-    for (int i = 0; i < _length; i++)
+    sf::Vector2i pos = m_headPos;
+    for (int i = 0; i < m_length; i++)
     {
-        _bodyPositions.emplace_back(pos, _direction);
-        move_position(pos, get_opposite(_direction));
+        m_bodyPositions.emplace_back(pos, m_direction);
+        shiftPosition(pos, getOpposite(m_direction));
     }
 
 
 
 
     // Head
-    _head.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
-    _head.setPosition(get_head_center());
-    _head.setRadius(PLAYER_WIDTH / 2);
-    _head.setFillColor(PLAYER_COLOR);
-    sf::Vector2f eyeBounds = _eyeSprite.getLocalBounds().size;
+    m_head.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
+    m_head.setPosition(getHeadCenter());
+    m_head.setRadius(PLAYER_WIDTH / 2);
+    m_head.setFillColor(PLAYER_COLOR);
+    sf::Vector2f eyeBounds = m_eyeSprite.getLocalBounds().size;
     float eyeScaleX = (PLAYER_WIDTH + PLAYER_WIDTH / 3) / static_cast<float>(eyeTexture->getSize().x);
     float eyeScaleY = (PLAYER_WIDTH + PLAYER_WIDTH / 3) / static_cast<float>(eyeTexture->getSize().y);
     sf::Vector2f eyeScale = {eyeScaleX, eyeScaleY};
-    _eyeSprite.setOrigin({eyeBounds.x / 2, eyeBounds.y / 2});
-    _eyeSprite.scale(eyeScale);
-    _eyeSprite.setPosition(get_head_center());
-    _eyeSprite.setRotation(direction_to_angle(_direction));
+    m_eyeSprite.setOrigin({eyeBounds.x / 2, eyeBounds.y / 2});
+    m_eyeSprite.scale(eyeScale);
+    m_eyeSprite.setPosition(getHeadCenter());
+    m_eyeSprite.setRotation(directionToAngle(m_direction));
 
     // Tail
-    _tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-    _end.setRadius(PLAYER_WIDTH / 2);
-    _end.setFillColor(PLAYER_COLOR);
-    _end.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
+    m_tailStrip.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+    m_end.setRadius(PLAYER_WIDTH / 2);
+    m_end.setFillColor(PLAYER_COLOR);
+    m_end.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
 
-    update_tail();
+    updateTail();
 }
 
 //Main Updates
 void Player::update()
 {
-    move_position(_headPos, _direction);
-    _bodyPositions.emplace_front(_headPos, _direction);
+    shiftPosition(m_headPos, m_direction);
+    m_bodyPositions.emplace_front(m_headPos, m_direction);
 
-    if (_bodyPositions.size() > _length)
+    if (m_bodyPositions.size() > m_length)
     {
-        _bodyPositions.pop_back();
+        m_bodyPositions.pop_back();
     }
 
-    _head.setPosition(get_head_center());
-    _eyeSprite.setPosition(get_head_center());
-    _eyeSprite.setRotation(direction_to_angle(_direction));
+    m_head.setPosition(getHeadCenter());
+    m_eyeSprite.setPosition(getHeadCenter());
+    m_eyeSprite.setRotation(directionToAngle(m_direction));
 
-    update_tail();
+    updateTail();
 }
 
-void Player::set_direction(Direction direction)
+void Player::setDirection(Direction direction)
 {
-    _direction = direction;
+    m_direction = direction;
 }
 
-void Player::update_tail()
+void Player::updateTail()
 {
-    _tailStrip.clear();
+    m_tailStrip.clear();
 
-    Direction previousDirection = get_opposite(_bodyPositions[0].direction);
-    for (int i = 0; i < _bodyPositions.size()-1; i++)
+    Direction previousDirection = getOpposite(m_bodyPositions[0].direction);
+    for (int i = 0; i < m_bodyPositions.size()-1; i++)
     {
-        const sf::Vector2i position = _bodyPositions[i].position;
-        const Direction direction = get_opposite(_bodyPositions[i].direction);
+        const sf::Vector2i position = m_bodyPositions[i].position;
+        const Direction direction = getOpposite(m_bodyPositions[i].direction);
 
         if (previousDirection != direction)
         {
-            add_vertices(generate_circle_vertices(position, previousDirection, direction));
+            addVertices(generateCircleVertices(position, previousDirection, direction));
         } else
         {
-            add_vertices(calc_width_vertex
+            addVertices(calcWidthVertex
             (
-                grid_pos_coordinates(position, SquareLocation::CENTER),
-                direction_to_angle(direction))
+                gridCoordinates(position, SquareLocation::CENTER),
+                directionToAngle(direction))
             );
         }
-        previousDirection = get_opposite(_bodyPositions[i].direction);
+        previousDirection = getOpposite(m_bodyPositions[i].direction);
     }
 
-    sf::Vector2i endpos = _bodyPositions[_bodyPositions.size()-1].position;
-    add_vertices(calc_width_vertex
+    sf::Vector2i endpos = m_bodyPositions[m_bodyPositions.size()-1].position;
+    addVertices(calcWidthVertex
             (
-                grid_pos_coordinates(endpos, SquareLocation::CENTER),
-                direction_to_angle(previousDirection))
+                gridCoordinates(endpos, SquareLocation::CENTER),
+                directionToAngle(previousDirection))
             );
-    _end.setPosition(grid_pos_coordinates(endpos, SquareLocation::CENTER));
+    m_end.setPosition(gridCoordinates(endpos, SquareLocation::CENTER));
 }
 
 //Support Functions
-SquareLocation travel_entry(const Direction search_dir)
+SquareLocation travelEntry(const Direction search_dir)
 {
     switch (search_dir)
     {
@@ -117,24 +117,24 @@ SquareLocation travel_entry(const Direction search_dir)
     throw std::invalid_argument("Invalid Direction");
 }
 
-void Player::add_vertices(const std::vector<sf::Vector2f>& points)
+void Player::addVertices(const std::vector<sf::Vector2f>& points)
 {
     for (sf::Vector2f point : points)
     {
-        _tailStrip.append(sf::Vertex({point, PLAYER_COLOR}));
+        m_tailStrip.append(sf::Vertex({point, PLAYER_COLOR}));
     }
 }
 
-void Player::increment_length()
+void Player::incrementLength()
 {
-    _length++;
+    m_length++;
 }
 
-std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2i initialPos, Direction initialDirection,
+std::vector<sf::Vector2f> Player::generateCircleVertices(sf::Vector2i initialPos, Direction initialDirection,
                                                            Direction finalDirection) const
 {
     std::vector<sf::Vector2f> circleVertices;
-    sf::Angle differenceAngle = direction_to_angle(finalDirection) - direction_to_angle(initialDirection);
+    sf::Angle differenceAngle = directionToAngle(finalDirection) - directionToAngle(initialDirection);
     differenceAngle = differenceAngle.wrapSigned();
 
 
@@ -167,15 +167,15 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2i initialP
     {
         //Left/Counter-Clockwise
 
-        initialAngle = direction_to_angle(initialDirection) + sf::radians(M_PI_2);
-        origin = grid_pos_coordinates(initialPos, potentialOrigin[0]);
+        initialAngle = directionToAngle(initialDirection) + sf::radians(M_PI_2);
+        origin = gridCoordinates(initialPos, potentialOrigin[0]);
     }
     else
     {
         //Right/Clockwise
 
-        initialAngle = direction_to_angle(initialDirection) - sf::radians(M_PI_2);
-        origin = grid_pos_coordinates(initialPos, potentialOrigin[1]);
+        initialAngle = directionToAngle(initialDirection) - sf::radians(M_PI_2);
+        origin = gridCoordinates(initialPos, potentialOrigin[1]);
     }
 
     for (int i = 1; i < TURN_RESOLUTION + 1; i++)
@@ -191,7 +191,7 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2i initialP
                     ? angle - sf::radians(M_PI)
                     : angle;
 
-        std::vector<sf::Vector2f> vertices = calc_width_vertex(pointPosition, angle);
+        std::vector<sf::Vector2f> vertices = calcWidthVertex(pointPosition, angle);
         circleVertices.push_back(vertices[0]);
         circleVertices.push_back(vertices[1]);
     }
@@ -201,13 +201,13 @@ std::vector<sf::Vector2f> Player::generate_circle_vertices(sf::Vector2i initialP
 
 void Player::draw(sf::RenderTarget& target, const sf::RenderStates states) const
 {
-    target.draw(_head, states);
-    target.draw(_end, states);
-    target.draw(_tailStrip, states);
-    target.draw(_eyeSprite, states);
+    target.draw(m_head, states);
+    target.draw(m_end, states);
+    target.draw(m_tailStrip, states);
+    target.draw(m_eyeSprite, states);
 }
 
-std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle angle)
+std::vector<sf::Vector2f> calcWidthVertex(sf::Vector2f position, sf::Angle angle)
 {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
@@ -215,8 +215,8 @@ std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle ang
     initialVector.y = PLAYER_WIDTH / 2 * std::sin(angle.asRadians());
 
     //Rotate the initial vector to both sides
-    sf::Vector2f rotation1 = rotate_vector(initialVector, sf::radians(M_PI_2));
-    sf::Vector2f rotation2 = rotate_vector(initialVector, sf::radians(-M_PI_2));
+    sf::Vector2f rotation1 = rotateVector(initialVector, sf::radians(M_PI_2));
+    sf::Vector2f rotation2 = rotateVector(initialVector, sf::radians(-M_PI_2));
 
     //Apply transformation to the initial position supplied
     sf::Vector2f pos1{position.x + rotation1.x, position.y + rotation1.y};
@@ -225,18 +225,18 @@ std::vector<sf::Vector2f> calc_width_vertex(sf::Vector2f position, sf::Angle ang
     return std::vector<sf::Vector2f>{pos1, pos2};
 }
 
-std::deque<bodyPos> Player::get_body_positions() const
+std::deque<BodyPos> Player::getBodyPositions() const
 {
-    return _bodyPositions;
+    return m_bodyPositions;
 }
 
 // Getter Functions
-int Player::get_length() const { return _length; }
-sf::Vector2f Player::get_position() const { return _head.getPosition(); }
-sf::Vector2i Player::get_position_grid() const { return _headPos; }
-Direction Player::get_move_direction() const { return _direction; }
+int Player::getLength() const { return m_length; }
+sf::Vector2f Player::getPosition() const { return m_head.getPosition(); }
+sf::Vector2i Player::getPositionGrid() const { return m_headPos; }
+Direction Player::getMoveDirection() const { return m_direction; }
 
-sf::Vector2f Player::get_head_center() const
+sf::Vector2f Player::getHeadCenter() const
 {
-    return grid_pos_coordinates(_headPos, SquareLocation::CENTER);
+    return gridCoordinates(m_headPos, SquareLocation::CENTER);
 }

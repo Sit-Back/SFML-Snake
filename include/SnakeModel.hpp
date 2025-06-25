@@ -11,27 +11,26 @@ class SnakeModel
 {
     public:
         //Generators
-        SnakeModel(AssetHandler* texture_handler);
+        SnakeModel(AssetHandler* textureHandler);
 
         //Fruit Methods
-        void create_fruit();
-        void destroy_fruit_index(int index);
-        void draw_fruit(sf::RenderWindow& window) const;
+        void createFruit();
+        void destroyFruitIndex(int index);
+        void drawFruit(sf::RenderWindow& window) const;
 
         //Getter Methods
-        sf::VertexArray get_vertices() const;
-        Player* get_player();
-        std::vector<sf::Vector2i> get_fruit_list() const;
+        sf::VertexArray getVertices() const;
+        Player* getPlayer();
+        std::vector<sf::Vector2i> getFruitList() const;
 
     private:
         //Member Variables
-        AssetHandler _textureHandler;
-        Player _player;
-        sf::VertexArray _gridVertices;
-        std::vector<sf::Sprite> _fruitSpriteList{};
-        std::vector<sf::Vector2i> _fruitList;
-
+        AssetHandler m_textureHandler;
+        Player m_player;
+        sf::VertexArray m_gridVertices;
+        std::vector<sf::Sprite> m_fruitSpriteList{};
+        std::vector<sf::Vector2i> m_fruitList;
 
         //General Methods
-        void generate_grid_vertices();
+        void generateGridVertices();
 };

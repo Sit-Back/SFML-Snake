@@ -8,14 +8,14 @@ const std::filesystem::path ASSET_PATH("assets");
 class AssetHandler
 {
     public:
-        explicit AssetHandler(const std::vector<std::string>& initial_textures);
+        explicit AssetHandler(const std::vector<std::string>& initialTextures);
         AssetHandler();
-        void load_texture(const std::string& texture_path);
-        sf::Texture* get_texture(const std::string& texture_path);
-        void load_font(const std::string& font_path);
-        sf::Texture* get_font(const std::string& font_path);
+        void loadTexture(const std::string& texturePath);
+        sf::Texture* getTexture(const std::string& texturePath);
+        void loadFont(const std::string& fontPath);
+        sf::Texture* getFont(const std::string& fontPath);
 
     private:
-        std::unordered_map<std::string, sf::Texture> _textures;
-        std::unordered_map<std::string, sf::Font> _fonts;
+        std::unordered_map<std::string, sf::Texture> m_loadedTextures;
+        std::unordered_map<std::string, sf::Font> m_loadedFonts;
 };
