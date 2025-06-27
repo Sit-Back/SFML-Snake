@@ -1,4 +1,6 @@
 #include "SnakeController.hpp"
+#include "SnakeConfig.hpp"
+#include "SnakeModel.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -7,8 +9,8 @@
 SnakeController::SnakeController() :
     m_model(&m_textureHandler),
     m_window(
-        sf::VideoMode(WINDOW_DIMENSIONS),
-        GAME_TITLE,
+        sf::VideoMode(SnakeConfig::WINDOW_DIMENSIONS),
+        SnakeConfig::GAME_TITLE,
         sf::Style::Titlebar | sf::Style::Close)
 {
     m_window.setVerticalSyncEnabled(true);
@@ -40,13 +42,13 @@ bool SnakeController::hasLost()
     const bool colliding = std::any_of(
         bodypositions.begin()+1,
         bodypositions.end(),
-        [headpos](BodyPos segment)
+        [headpos](Player::BodyPos segment)
         {return segment.position == headpos;}
     );
 
     if (colliding) return true;
 
-    sf::Vector2i corner = {GRID_DIMENSIONS.x-1, GRID_DIMENSIONS.y-1};
+    sf::Vector2i corner = {SnakeModel::GRID_DIMENSIONS.x-1, SnakeModel::GRID_DIMENSIONS.y-1};
     if (!pointInRect(headpos, {0,0}, corner)) return true;
 
     return false;
@@ -100,7 +102,7 @@ void SnakeController::playSnake()
 {
     processGameEvents();
 
-    if (m_timer.getElapsedTime().asSeconds() > UPDATE_RATE) {
+    if (m_timer.getElapsedTime().asSeconds() > SnakeConfig::UPDATE_RATE) {
         if (!m_inputBuffer.empty()) {
             m_model.getPlayer()->setDirection(*getNextDirection());
         }
@@ -147,7 +149,7 @@ void SnakeController::playGame()
 }
 
 void SnakeController::addMoveToBuffer(const Direction move) {
-    if (m_inputBuffer.size() < MOVE_QUEUE_SIZE) {
+    if (m_inputBuffer.size() < Player::MOVE_QUEUE_SIZE) {
         if (m_inputBuffer.empty()) {
             if (
                 const Direction player_direction = m_model.getPlayer()->getMoveDirection();

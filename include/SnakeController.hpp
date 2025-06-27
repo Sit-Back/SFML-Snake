@@ -6,10 +6,6 @@
 #include "SnakeModel.hpp"
 #include "Button.hpp"
 
-constexpr float UPDATE_RATE = 0.15;
-const std::string GAME_TITLE = "Snake Game";
-constexpr sf::Vector2u WINDOW_DIMENSIONS = {800, 800};
-
 struct Menu
 {
     sf::Sprite logo;

@@ -2,6 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include "Player.hpp"
 #include "utility.hpp"
+#include "SnakeConfig.hpp"
+
+const sf::Color Player::PLAYER_COLOR(245, 66, 129);
 
 Player::Player(const sf::Texture* eyeTexture) : m_eyeSprite(*eyeTexture)
 {
@@ -177,8 +180,8 @@ std::vector<sf::Vector2f> Player::generateCircleVertices(sf::Vector2i initialPos
     for (int i = 1; i < TURN_RESOLUTION + 1; i++)
     {
         sf::Angle currentAngle = initialAngle + static_cast<float>(i) * (differenceAngle / (TURN_RESOLUTION + 1));
-        const float rise = (GRID_SIZE / 2) * std::sin(currentAngle.asRadians());
-        const float run = (GRID_SIZE / 2) * std::cos(currentAngle.asRadians());
+        const float rise = (SnakeConfig::GRID_SIZE / 2) * std::sin(currentAngle.asRadians());
+        const float run = (SnakeConfig::GRID_SIZE / 2) * std::cos(currentAngle.asRadians());
 
         const sf::Vector2f pointPosition = {origin.x + run, origin.y + rise};
         float perpanGradient = -run / rise;
@@ -207,8 +210,8 @@ std::vector<sf::Vector2f> calcWidthVertex(sf::Vector2f position, sf::Angle angle
 {
     //Get a direction vector of the angle and stretch to the length of width
     sf::Vector2f initialVector;
-    initialVector.x = PLAYER_WIDTH / 2 * std::cos(angle.asRadians());
-    initialVector.y = PLAYER_WIDTH / 2 * std::sin(angle.asRadians());
+    initialVector.x = Player::PLAYER_WIDTH / 2 * std::cos(angle.asRadians());
+    initialVector.y = Player::PLAYER_WIDTH / 2 * std::sin(angle.asRadians());
 
     //Rotate the initial vector to both sides
     sf::Vector2f rotation1 = rotateVector(initialVector, sf::radians(M_PI_2));
@@ -221,7 +224,7 @@ std::vector<sf::Vector2f> calcWidthVertex(sf::Vector2f position, sf::Angle angle
     return std::vector<sf::Vector2f>{pos1, pos2};
 }
 
-std::deque<BodyPos> Player::getBodyPositions() const
+std::deque<Player::BodyPos> Player::getBodyPositions() const
 {
     return m_bodyPositions;
 }

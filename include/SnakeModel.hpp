@@ -5,11 +5,10 @@
 #include "Player.hpp"
 #include "AssetHandler.hpp"
 
-constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};
-
 class SnakeModel
 {
     public:
+        static constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};
         //Generators
         SnakeModel(AssetHandler* textureHandler);
 

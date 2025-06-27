@@ -1,5 +1,6 @@
 #include <cmath>
 #include "utility.hpp"
+#include "SnakeConfig.hpp"
 
 sf::Vector2f rotateVector(sf::Vector2f initialVector, sf::Angle rotation) {
     sf::Vector2f finalVector;
@@ -68,45 +69,45 @@ sf::Angle directionToAngle(Direction direction) {
 }
 
 sf::Vector2f gridCoordinates(const sf::Vector2i position) {
-    return {static_cast<float>(position.x) * GRID_SIZE, static_cast<float>(position.y)*GRID_SIZE};
+    return {static_cast<float>(position.x) * SnakeConfig::GRID_SIZE, static_cast<float>(position.y)*SnakeConfig::GRID_SIZE};
 }
 
 sf::Vector2f gridCoordinates(
     const sf::Vector2i position,
     const SquareLocation location_in_square)
 {
-    sf::Vector2f coords = {static_cast<float>(position.x)*GRID_SIZE, static_cast<float>(position.y)*GRID_SIZE};
+    sf::Vector2f coords = {static_cast<float>(position.x)*SnakeConfig::GRID_SIZE, static_cast<float>(position.y)*SnakeConfig::GRID_SIZE};
     switch (location_in_square)
     {
     case SquareLocation::TOP_LEFT:
         return coords;
     case SquareLocation::TOP_RIGHT:
-        coords.x += GRID_SIZE;
+        coords.x += SnakeConfig::GRID_SIZE;
         return coords;
     case SquareLocation::BOTTOM_LEFT:
-        coords.y += GRID_SIZE;
+        coords.y += SnakeConfig::GRID_SIZE;
         return coords;
     case SquareLocation::BOTTOM_RIGHT:
-        coords.x += GRID_SIZE;
-        coords.y += GRID_SIZE;
+        coords.x += SnakeConfig::GRID_SIZE;
+        coords.y += SnakeConfig::GRID_SIZE;
         return coords;
     case SquareLocation::TOP:
-        coords.x += GRID_SIZE/2;
+        coords.x += SnakeConfig::GRID_SIZE/2;
         return coords;
     case SquareLocation::BOTTOM:
-        coords.x += GRID_SIZE/2;
-        coords.y += GRID_SIZE;
+        coords.x += SnakeConfig::GRID_SIZE/2;
+        coords.y += SnakeConfig::GRID_SIZE;
         return coords;
     case SquareLocation::LEFT:
-        coords.y += GRID_SIZE/2;
+        coords.y += SnakeConfig::GRID_SIZE/2;
         return coords;
     case SquareLocation::RIGHT:
-        coords.x += GRID_SIZE;
-        coords.y += GRID_SIZE/2;
+        coords.x += SnakeConfig::GRID_SIZE;
+        coords.y += SnakeConfig::GRID_SIZE/2;
         return coords;
     case SquareLocation::CENTER:
-        coords.x += GRID_SIZE/2;
-        coords.y += GRID_SIZE/2;
+        coords.x += SnakeConfig::GRID_SIZE/2;
+        coords.y += SnakeConfig::GRID_SIZE/2;
         return coords;
     }
 

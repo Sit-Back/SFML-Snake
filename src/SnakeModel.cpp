@@ -1,7 +1,9 @@
 #include "SnakeModel.hpp"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include "Player.hpp"
 #include "utility.hpp"
+#include "SnakeConfig.hpp"
 
 
 SnakeModel::SnakeModel(AssetHandler* texture_handler) :
@@ -39,10 +41,10 @@ void SnakeModel::generateGridVertices()
             }
 
             auto col_fl = static_cast<float>(column);
-            sf::Vector2f top_left = {col_fl * GRID_SIZE, row_fl * GRID_SIZE};
-            sf::Vector2f top_right{col_fl * GRID_SIZE + GRID_SIZE, row_fl * GRID_SIZE};
-            sf::Vector2f bottom_left{col_fl * GRID_SIZE, row_fl * GRID_SIZE + GRID_SIZE};
-            sf::Vector2f bottom_right{col_fl * GRID_SIZE + GRID_SIZE, row_fl * GRID_SIZE + GRID_SIZE};
+            sf::Vector2f top_left = {col_fl * SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE};
+            sf::Vector2f top_right{col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE};
+            sf::Vector2f bottom_left{col_fl * SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE};
+            sf::Vector2f bottom_right{col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE};
 
             columnValues.push_back(top_left);
 
@@ -80,7 +82,7 @@ void SnakeModel::createFruit() {
         ||  std::any_of(
             bodypositions.begin(),
             bodypositions.end(),
-            [position](BodyPos segment)
+            [position](Player::BodyPos segment)
             {return segment.position == position;}
         )
     )
@@ -91,8 +93,8 @@ void SnakeModel::createFruit() {
     sf::Sprite sprite(*m_textureHandler.getTexture("apple.png"));
     sprite.setPosition(gridCoordinates(position));
     sf::Vector2f scale = {
-        GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),
-        GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().y)};
+        SnakeConfig::GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),
+        SnakeConfig::GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().y)};
     sprite.scale(scale);
     m_fruitSpriteList.push_back(sprite);
     m_fruitList.push_back(position);

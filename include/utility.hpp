@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-constexpr float GRID_SIZE = 800.0/15.0;
-
 enum class Direction {
     UP,
     DOWN,

@@ -5,23 +5,23 @@
 #include <deque>
 #include "utility.hpp"
 
-constexpr int MOVE_QUEUE_SIZE = 2;
-constexpr sf::Color PLAYER_COLOR(245, 66, 129);
-constexpr int TURN_RESOLUTION = 10;
-constexpr int INITIAL_PLAYER_LENGTH = 4;
-constexpr float PLAYER_WIDTH = 40;
-
-struct BodyPos
-{
-    sf::Vector2i position;
-    Direction direction;
-};
-
 std::vector<sf::Vector2f> calcWidthVertex(sf::Vector2f position, sf::Angle angle);
 SquareLocation travelEntry(Direction search_dir);
 
 class Player final : public sf::Drawable {
     public:
+        struct BodyPos
+        {
+            sf::Vector2i position;
+            Direction direction;
+        };
+
+        static const sf::Color PLAYER_COLOR;
+        static constexpr int MOVE_QUEUE_SIZE = 2;
+        static constexpr int TURN_RESOLUTION = 10;
+        static constexpr int INITIAL_PLAYER_LENGTH = 4;
+        static constexpr float PLAYER_WIDTH = 40;
+
         //Constructors
         explicit Player(const sf::Texture* eyeTexture);
         void update();
