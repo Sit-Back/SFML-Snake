@@ -1,17 +1,16 @@
 #include "SnakeController.hpp"
 #include "SnakeConfig.hpp"
 #include "SnakeModel.hpp"
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Mouse.hpp>
 #include <vector>
+#include "SnakeGameRenderer.hpp"
 
 SnakeController::SnakeController() :
     m_model(&m_textureHandler),
     m_window(
         sf::VideoMode(SnakeConfig::WINDOW_DIMENSIONS),
         SnakeConfig::GAME_TITLE,
-        sf::Style::Titlebar | sf::Style::Close)
+        sf::Style::Titlebar | sf::Style::Close),
+    m_renderer(&m_window, &m_textureHandler)
 {
     m_window.setVerticalSyncEnabled(true);
     m_window.setKeyRepeatEnabled(false);
@@ -21,7 +20,7 @@ SnakeController::SnakeController() :
 }
 
 void SnakeController::startSnake() {
-    m_gameState = GameState::GAME;
+    m_gameState = GameMode::GAME;
 }
 
 
@@ -29,26 +28,26 @@ void SnakeController::drawGame()
 {
     m_window.clear(sf::Color::Black);
     m_window.draw(m_model.getVertices());
-    m_window.draw(*m_model.getPlayer());
+    m_window.draw(m_renderer);
     m_model.drawFruit(m_window);
 }
 
 bool SnakeController::hasLost()
 {
     const auto player = *m_model.getPlayer();
-    auto headpos = player.getPositionGrid();
+    auto headpos = player.getPosition();
     auto bodypositions = player.getBodyPositions();
 
     const bool colliding = std::any_of(
         bodypositions.begin()+1,
         bodypositions.end(),
-        [headpos](Player::BodyPos segment)
+        [headpos](BodyPos segment)
         {return segment.position == headpos;}
     );
 
     if (colliding) return true;
 
-    sf::Vector2i corner = {SnakeModel::GRID_DIMENSIONS.x-1, SnakeModel::GRID_DIMENSIONS.y-1};
+    sf::Vector2i corner = {SnakeConfig::GRID_DIMENSIONS.x-1, SnakeConfig::GRID_DIMENSIONS.y-1};
     if (!pointInRect(headpos, {0,0}, corner)) return true;
 
     return false;
@@ -108,7 +107,7 @@ void SnakeController::playSnake()
         }
         m_model.getPlayer()->update();
         for (int i = 0; i < m_model.getFruitList().size(); i++) {
-            if (m_model.getPlayer()->getPositionGrid() == m_model.getFruitList().at(i)) {
+            if (m_model.getPlayer()->getPosition() == m_model.getFruitList().at(i)) {
                 m_model.getPlayer()->incrementLength();
                 m_model.destroyFruitIndex(i);
             }
@@ -117,12 +116,20 @@ void SnakeController::playSnake()
         m_timer.restart();
     }
 
+    GameState newGameState = {
+        m_model.getPlayer()->getBodyPositions(),
+        m_model.getPlayer()->getPosition(),
+        m_model.getPlayer()->getMoveDirection(),
+        m_model.getFruitList()
+    };
+
     if (hasLost())
     {
         m_model = SnakeModel(&m_textureHandler);
-        m_gameState = GameState::OVER;
+        m_gameState = GameMode::OVER;
     } else
     {
+        m_renderer.update(newGameState);
         drawGame();
     }
 }
@@ -137,10 +144,10 @@ void SnakeController::playGame()
     {
         switch (m_gameState)
         {
-        case GameState::GAME:
+        case GameMode::GAME:
             playSnake();
             break;
-        case GameState::OVER:
+        case GameMode::OVER:
             gameOver();
             break;
         }
@@ -149,7 +156,7 @@ void SnakeController::playGame()
 }
 
 void SnakeController::addMoveToBuffer(const Direction move) {
-    if (m_inputBuffer.size() < Player::MOVE_QUEUE_SIZE) {
+    if (m_inputBuffer.size() < SnakeConfig::MOVE_QUEUE_SIZE) {
         if (m_inputBuffer.empty()) {
             if (
                 const Direction player_direction = m_model.getPlayer()->getMoveDirection();

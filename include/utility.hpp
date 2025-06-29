@@ -2,12 +2,26 @@
 
 #include <SFML/Graphics.hpp>
 
+enum class GameMode
+{    
+    GAME,
+    START,
+    OVER
+};
+
 enum class Direction {
     UP,
     DOWN,
     LEFT,
     RIGHT
 };
+
+struct BodyPos
+{
+    sf::Vector2i position;
+    Direction direction;
+};
+
 
 enum class SquareLocation {
     TOP_LEFT,

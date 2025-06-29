@@ -5,13 +5,7 @@
 #include <vector>
 #include "SnakeModel.hpp"
 #include "Button.hpp"
-
-struct Menu
-{
-    sf::Sprite logo;
-    sf::Text subtext;
-    std::vector<Button> buttons;
-};
+#include "SnakeGameRenderer.hpp"
 
 class SnakeController
 {
@@ -23,19 +17,13 @@ public:
     void playGame();
 
 private:
-    enum class GameState
-    {
-        GAME,
-        START,
-        OVER
-    };
-
     AssetHandler m_textureHandler;
     SnakeModel m_model;
     std::queue<Direction> m_inputBuffer;
     sf::RenderWindow m_window;
+    SnakeGameRenderer m_renderer;
     sf::Clock m_timer;
-    GameState m_gameState = GameState::GAME;
+    GameMode m_gameState = GameMode::GAME;
     void addMoveToBuffer(Direction move);
     std::optional<Direction> getNextDirection();
     void processGameEvents();

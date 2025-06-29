@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include "AssetHandler.hpp"
 
 AssetHandler::AssetHandler(const std::vector<std::string>& initialTextures )
