@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <deque>
 #include "SnakeGameRenderer.hpp"
@@ -87,6 +88,20 @@ void SnakeGameRenderer::generateGridVertices()
     }
 }
 
+void SnakeGameRenderer::createFruitSprite(sf::Vector2i position) {
+    sf::Sprite sprite(*m_assetHandler->getTexture("apple.png"));
+    sprite.setPosition(gridCoordinates(position));
+    sf::Vector2f scale = {
+        SnakeConfig::GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),
+        SnakeConfig::GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().y)};
+    sprite.scale(scale);
+    m_fruitSpriteList.push_back(sprite);
+} 
+
+void SnakeGameRenderer::destroyFruitSprite(int index) {
+    m_fruitSpriteList.erase(m_fruitSpriteList.begin() + index);
+}
+
 void SnakeGameRenderer::update(const GameState& newGameState) {
     m_headSprite.setPosition(getHeadCenter(newGameState.headPos));
     m_eyeSprite.setPosition(getHeadCenter(newGameState.headPos));
@@ -98,7 +113,9 @@ void SnakeGameRenderer::update(const GameState& newGameState) {
 void SnakeGameRenderer::draw(sf::RenderTarget& target, const sf::RenderStates states) const
 {
     target.draw(m_gridVertices);
+    drawFruit(target, states);
     drawPlayer(target, states);
+    
 }
 
 void SnakeGameRenderer::drawPlayer(sf::RenderTarget& target, const sf::RenderStates states) const
@@ -108,6 +125,13 @@ void SnakeGameRenderer::drawPlayer(sf::RenderTarget& target, const sf::RenderSta
     target.draw(m_tailStrip, states);
     target.draw(m_eyeSprite, states);
 }
+
+void SnakeGameRenderer::drawFruit(sf::RenderTarget& window, const sf::RenderStates& states) const {
+    for (const sf::Sprite& fruit : m_fruitSpriteList) {
+        window.draw(fruit, states);
+    };
+}
+
 
 std::vector<sf::Vector2f> SnakeGameRenderer::calcWidthVertex(sf::Vector2f position, sf::Angle angle) const
 {

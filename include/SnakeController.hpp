@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <queue>
 #include <vector>
@@ -30,4 +31,6 @@ private:
     void processMenuEvents(std::vector<Button> buttons);
     void startSnake();
     void drawGame(); 
+    void createFruit();
+    void destroyFruit(int index);
 };

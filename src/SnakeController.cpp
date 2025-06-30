@@ -1,7 +1,10 @@
 #include "SnakeController.hpp"
 #include "SnakeConfig.hpp"
 #include "SnakeModel.hpp"
+#include <SFML/System/Vector2.hpp>
+#include <iostream>
 #include <vector>
+#include <algorithm>
 #include "SnakeGameRenderer.hpp"
 
 SnakeController::SnakeController() :
@@ -28,7 +31,6 @@ void SnakeController::drawGame()
 {
     m_window.clear(sf::Color::Black);
     m_window.draw(m_renderer);
-    m_model.drawFruit(m_window);
 }
 
 bool SnakeController::hasLost()
@@ -96,6 +98,11 @@ void SnakeController::processMenuEvents(std::vector<Button> buttons)
     }
 }
 
+void SnakeController::destroyFruit(int index) {
+    m_model.destroyFruitIndex(index);
+    m_renderer.destroyFruitSprite(index);
+}
+
 void SnakeController::playSnake()
 {
     processGameEvents();
@@ -108,33 +115,60 @@ void SnakeController::playSnake()
         for (int i = 0; i < m_model.getFruitList().size(); i++) {
             if (m_model.getPlayer()->getPosition() == m_model.getFruitList().at(i)) {
                 m_model.getPlayer()->incrementLength();
-                m_model.destroyFruitIndex(i);
+                destroyFruit(i);
             }
         }
-        m_model.createFruit();
+        
+        createFruit();
         m_timer.restart();
     }
 
-    GameState newGameState = {
+    SnakeGameRenderer::GameState newGameState = {
         m_model.getPlayer()->getBodyPositions(),
         m_model.getPlayer()->getPosition(),
-        m_model.getPlayer()->getMoveDirection(),
-        m_model.getFruitList()
+        m_model.getPlayer()->getMoveDirection()
     };
 
-    if (hasLost())
-    {
-        m_model = SnakeModel(&m_textureHandler);
-        m_gameState = GameMode::OVER;
-    } else
-    {
+    //if (hasLost())
+    //{
+    //    m_model = SnakeModel(&m_textureHandler);
+    //    m_gameState = GameMode::OVER;
+    //} else
+    //{
         m_renderer.update(newGameState);
         drawGame();
-    }
+    //}
 }
 
 void SnakeController::gameOver()
 {
+}
+
+void SnakeController::createFruit() {
+    sf::Vector2i position{rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
+
+    auto bodypositions = m_model.getPlayer()->getBodyPositions();
+    auto fruitList = m_model.getFruitList();
+    while (
+        std::any_of(
+            fruitList.begin(),
+            fruitList.end(),
+            [position](const sf::Vector2i& fruit_pos)
+            {
+                return fruit_pos == position;}
+        )
+        ||  std::any_of(
+            bodypositions.begin(),
+            bodypositions.end(),
+            [position](BodyPos segment)
+            {return segment.position == position;})
+    )
+    {
+        position = {rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
+    }
+
+    m_model.createFruit(position);
+    m_renderer.createFruitSprite(position);
 }
 
 void SnakeController::playGame()

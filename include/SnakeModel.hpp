@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <vector>
 #include "Player.hpp"
 #include "AssetHandler.hpp"
@@ -12,9 +13,9 @@ class SnakeModel
         SnakeModel(AssetHandler* textureHandler);
 
         //Fruit Methods
-        void createFruit();
+        void createFruit(sf::Vector2i position);
         void destroyFruitIndex(int index);
-        void drawFruit(sf::RenderWindow& window) const;
+        
 
         //Getter Methods
         sf::VertexArray getVertices() const;
@@ -23,8 +24,6 @@ class SnakeModel
 
     private:
         //Member Variables
-        AssetHandler m_textureHandler;
         Player m_player;
-        std::vector<sf::Sprite> m_fruitSpriteList{};
         std::vector<sf::Vector2i> m_fruitList;        
 };
