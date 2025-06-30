@@ -25,10 +25,6 @@ class SnakeModel
         //Member Variables
         AssetHandler m_textureHandler;
         Player m_player;
-        sf::VertexArray m_gridVertices;
         std::vector<sf::Sprite> m_fruitSpriteList{};
-        std::vector<sf::Vector2i> m_fruitList;
-
-        //General Methods
-        void generateGridVertices();
+        std::vector<sf::Vector2i> m_fruitList;        
 };

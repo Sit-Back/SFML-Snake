@@ -5,6 +5,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <vector>
+#include "Button.hpp"
 
 class Screen final : sf::Drawable {
     public:

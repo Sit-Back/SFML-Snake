@@ -27,7 +27,6 @@ void SnakeController::startSnake() {
 void SnakeController::drawGame()
 {
     m_window.clear(sf::Color::Black);
-    m_window.draw(m_model.getVertices());
     m_window.draw(m_renderer);
     m_model.drawFruit(m_window);
 }
