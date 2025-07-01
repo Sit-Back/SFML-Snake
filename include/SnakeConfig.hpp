@@ -10,4 +10,14 @@ namespace SnakeConfig {
     constexpr sf::Vector2u WINDOW_DIMENSIONS = {800, 800};
     static constexpr int MOVE_QUEUE_SIZE = 2;
     constexpr sf::Vector2i GRID_DIMENSIONS = {15, 15};
+
+    const sf::Vector2f BUTTON_1_POS = {
+        static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.x)/2, 
+        2*static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.y)/3
+    };
+
+    const sf::Vector2f BUTTON_2_POS = {
+        static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.x)/2, 
+        2*static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.y)/3+20
+    };
 }

@@ -24,7 +24,7 @@ class SnakeGameRenderer final : public sf::Drawable {
         //
         static const sf::Color PLAYER_COLOR;
         static constexpr float PLAYER_WIDTH = 40;
-        static constexpr int TURN_RESOLUTION = 3;
+        static constexpr int TURN_RESOLUTION = 5;
 
         ////Other Methods
         //
