@@ -38,7 +38,7 @@ SnakeController::SnakeController() :
 
     Button playButton(
         SnakeConfig::BUTTON_1_POS,
-        "PLAY",
+        "PLAY AGAIN",
         m_textureHandler.getFont("ui-font.ttf"),
         [this](){
             m_model = SnakeModel(&m_textureHandler);
@@ -151,6 +151,7 @@ void SnakeController::playSnake()
     processGameEvents();
 
     if (m_timer.getElapsedTime().asSeconds() > SnakeConfig::UPDATE_RATE) {
+        createFruit();
         if (!m_inputBuffer.empty()) {
             m_model.getPlayer()->setDirection(*getNextDirection());
         }
@@ -161,8 +162,6 @@ void SnakeController::playSnake()
                 destroyFruit(i);
             }
         }
-        
-        createFruit();
         m_timer.restart();
     }
 
@@ -183,30 +182,33 @@ void SnakeController::playSnake()
 }
 
 void SnakeController::createFruit() {
-    sf::Vector2i position{rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
+    int filledSquares = m_model.getPlayer()->getLength() + m_model.getFruitList().size() - 1;
+    if (filledSquares < SnakeConfig::AVAILIABLE_SQUARES) {
+        sf::Vector2i position{rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
 
-    auto bodypositions = m_model.getPlayer()->getBodyPositions();
-    auto fruitList = m_model.getFruitList();
-    while (
-        std::any_of(
-            fruitList.begin(),
-            fruitList.end(),
-            [position](const sf::Vector2i& fruit_pos)
-            {
-                return fruit_pos == position;}
+        auto bodypositions = m_model.getPlayer()->getBodyPositions();
+        auto fruitList = m_model.getFruitList();
+        while (
+            std::any_of(
+                fruitList.begin(),
+                fruitList.end(),
+                [position](const sf::Vector2i& fruit_pos)
+                {
+                    return fruit_pos == position;}
+            )
+            ||  std::any_of(
+                bodypositions.begin(),
+                bodypositions.end(),
+                [position](BodyPos segment)
+                {return segment.position == position;})
         )
-        ||  std::any_of(
-            bodypositions.begin(),
-            bodypositions.end(),
-            [position](BodyPos segment)
-            {return segment.position == position;})
-    )
-    {
-        position = {rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
-    }
+        {
+            position = {rand() % SnakeConfig::GRID_DIMENSIONS.x, rand() % SnakeConfig::GRID_DIMENSIONS.y };
+        }
 
-    m_model.createFruit(position);
-    m_renderer.createFruitSprite(position);
+        m_model.createFruit(position);
+        m_renderer.createFruitSprite(position);
+    }
 }
 
 void SnakeController::playGame()

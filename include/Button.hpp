@@ -15,6 +15,6 @@ public:
     void handleMouseClick(sf::Vector2f mousePos) const;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-     sf::Text m_text;
+    sf::Text m_text;
     const std::function<void()> m_function;
 };
