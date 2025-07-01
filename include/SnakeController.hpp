@@ -7,6 +7,7 @@
 #include "SnakeModel.hpp"
 #include "Button.hpp"
 #include "SnakeGameRenderer.hpp"
+#include "Screen.hpp"
 
 class SnakeController
 {
@@ -14,7 +15,6 @@ public:
     SnakeController();
     bool hasLost();
     void playSnake();
-    void gameOver();
     void playGame();
 
 private:
@@ -24,12 +24,14 @@ private:
     sf::RenderWindow m_window;
     SnakeGameRenderer m_renderer;
     sf::Clock m_timer;
+    Screen m_endScreen;
     GameMode m_gameState = GameMode::GAME;
     void addMoveToBuffer(Direction move);
     std::optional<Direction> getNextDirection();
     void processGameEvents();
-    void processMenuEvents(std::vector<Button> buttons);
+    void processMenuEvents(std::vector<Button>* buttons);
     void startSnake();
+    void quit();
     void drawGame(); 
     void createFruit();
     void destroyFruit(int index);

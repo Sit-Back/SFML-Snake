@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/System/Vector2.hpp>
 #include <string>
 #include <SFML/Graphics.hpp>
 
@@ -18,6 +19,10 @@ namespace SnakeConfig {
 
     const sf::Vector2f BUTTON_2_POS = {
         static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.x)/2, 
-        2*static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.y)/3+20
+        2*static_cast<float>(SnakeConfig::WINDOW_DIMENSIONS.y)/3+50
+    };
+    const sf::Vector2f LOGO_POSITION{
+        static_cast<float>(WINDOW_DIMENSIONS.x)/2,
+        100
     };
 }

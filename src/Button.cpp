@@ -6,16 +6,19 @@ Button::Button
     sf::Vector2f position,
     std::string text,
     sf::Font* font,
-   std::function<void()> function)
+    std::function<void()> function)
 : m_function(function), m_text(*font)
 {
     m_text.setString(text);
     m_text.setPosition(position);
+    
+    auto buttonCenter = m_text.getLocalBounds().getCenter();
+    m_text.setOrigin(buttonCenter);
 }
 
 void Button::handleMouseClick(sf::Vector2f mousePos) const
 {
-    if (m_text.getLocalBounds().contains(mousePos)) {
+    if (m_text.getGlobalBounds().contains(mousePos)) {
         m_function();
     }
 }

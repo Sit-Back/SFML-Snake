@@ -1,8 +1,11 @@
 #include "SnakeController.hpp"
+#include "AssetHandler.hpp"
+#include "Button.hpp"
 #include "SnakeConfig.hpp"
 #include "SnakeModel.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <iostream>
+#include "Screen.hpp"
 #include <vector>
 #include <algorithm>
 #include "SnakeGameRenderer.hpp"
@@ -13,17 +16,44 @@ SnakeController::SnakeController() :
         sf::VideoMode(SnakeConfig::WINDOW_DIMENSIONS),
         SnakeConfig::GAME_TITLE,
         sf::Style::Titlebar | sf::Style::Close),
-    m_renderer(&m_window, &m_textureHandler)
+    m_renderer(&m_window, &m_textureHandler),
+    m_endScreen(
+        &m_textureHandler,
+        m_textureHandler.getTexture("gameover.png"),
+        " "
+    )
 {
     m_window.setVerticalSyncEnabled(true);
     m_window.setKeyRepeatEnabled(false);
 
     sf::View gridView(sf::FloatRect({0, 0}, {800, 800}));
     m_window.setView(gridView);
+
+    Button button1(
+        SnakeConfig::BUTTON_1_POS,
+        "PLAY",
+        m_textureHandler.getFont("ui-font.ttf"),
+        [this](){startSnake();}
+    );
+    m_endScreen.addButton(button1);
+
+    Button button2(
+        SnakeConfig::BUTTON_2_POS,
+        "QUIT",
+        m_textureHandler.getFont("ui-font.ttf"),
+        [this](){quit();}
+    );
+    m_endScreen.addButton(button2);
 }
 
 void SnakeController::startSnake() {
+    m_model = SnakeModel(&m_textureHandler);
+    m_renderer = SnakeGameRenderer(&m_window, &m_textureHandler);
     m_gameState = GameMode::GAME;
+}
+
+void SnakeController::quit() {
+    m_window.close();
 }
 
 
@@ -81,7 +111,7 @@ void SnakeController::processGameEvents()
     }
 }
 
-void SnakeController::processMenuEvents(std::vector<Button> buttons)
+void SnakeController::processMenuEvents(std::vector<Button>* buttons)
 {
     while (const  std::optional<sf::Event> event = m_window.pollEvent())
     {
@@ -90,7 +120,7 @@ void SnakeController::processMenuEvents(std::vector<Button> buttons)
         } else if (const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (mouseEvent->button == sf::Mouse::Button::Left) {
                 sf::Vector2f clickCoords = m_window.mapPixelToCoords(mouseEvent->position);
-                for (Button button : buttons) {
+                for (Button button : *buttons) {
                     button.handleMouseClick(clickCoords);
                 }
             }
@@ -129,19 +159,13 @@ void SnakeController::playSnake()
         m_model.getPlayer()->getMoveDirection()
     };
 
-    //if (hasLost())
-    //{
-    //    m_model = SnakeModel(&m_textureHandler);
-    //    m_gameState = GameMode::OVER;
-    //} else
-    //{
+    if (hasLost())
+    {
+        m_gameState = GameMode::OVER;
+    } else
+    {
         m_renderer.update(newGameState);
-        drawGame();
-    //}
-}
-
-void SnakeController::gameOver()
-{
+    }
 }
 
 void SnakeController::createFruit() {
@@ -179,9 +203,12 @@ void SnakeController::playGame()
         {
         case GameMode::GAME:
             playSnake();
+            drawGame();
             break;
         case GameMode::OVER:
-            gameOver();
+            processMenuEvents(m_endScreen.getButtons());
+            m_window.clear();
+            m_window.draw(m_endScreen);
             break;
         }
         m_window.display();
