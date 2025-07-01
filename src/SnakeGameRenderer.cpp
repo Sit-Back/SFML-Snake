@@ -12,11 +12,16 @@ const sf::Color SnakeGameRenderer::PLAYER_COLOR(245, 66, 129);
 SnakeGameRenderer::SnakeGameRenderer(sf::RenderWindow* window, AssetHandler* assetHandler) :
         m_assetHandler(assetHandler),
         m_window(window),
+        m_scoreCounter(*assetHandler->getFont("ui-font.ttf")),
         m_eyeSprite(*assetHandler->getTexture("eyes.png")),
         m_gridVertices(
             sf::PrimitiveType::Triangles,
             SnakeConfig::GRID_DIMENSIONS.x * SnakeConfig::GRID_DIMENSIONS.y * 6)
 {
+    auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
+    m_scoreCounter.setOrigin(counterCenter);
+    m_scoreCounter.setPosition(SnakeConfig::SCORE_POSITION);
+
     m_headSprite.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
     m_headSprite.setRadius(PLAYER_WIDTH / 2);
     m_headSprite.setFillColor(PLAYER_COLOR);
@@ -35,6 +40,40 @@ SnakeGameRenderer::SnakeGameRenderer(sf::RenderWindow* window, AssetHandler* ass
     m_endSprite.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
 
     generateGridVertices();
+}
+
+void SnakeGameRenderer::update(const GameState& newGameState) {
+    m_headSprite.setPosition(getHeadCenter(newGameState.headPos));
+    m_eyeSprite.setPosition(getHeadCenter(newGameState.headPos));
+    m_eyeSprite.setRotation(directionToAngle(newGameState.direction));
+
+    m_scoreCounter.setString("Score: " + std::to_string(newGameState.score));
+    auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
+    m_scoreCounter.setOrigin(counterCenter);
+
+    updateTail(newGameState.segmentPositions);
+}
+
+void SnakeGameRenderer::draw(sf::RenderTarget& target, const sf::RenderStates states) const
+{
+    target.draw(m_gridVertices);
+    drawFruit(target, states);
+    drawPlayer(target, states);
+    target.draw(m_scoreCounter);
+}
+
+void SnakeGameRenderer::drawPlayer(sf::RenderTarget& target, const sf::RenderStates states) const
+{
+    target.draw(m_headSprite, states);
+    target.draw(m_endSprite, states);
+    target.draw(m_tailStrip, states);
+    target.draw(m_eyeSprite, states);
+}
+
+void SnakeGameRenderer::drawFruit(sf::RenderTarget& window, const sf::RenderStates& states) const {
+    for (const sf::Sprite& fruit : m_fruitSpriteList) {
+        window.draw(fruit, states);
+    };
 }
 
 void SnakeGameRenderer::generateGridVertices()
@@ -101,37 +140,6 @@ void SnakeGameRenderer::createFruitSprite(sf::Vector2i position) {
 void SnakeGameRenderer::destroyFruitSprite(int index) {
     m_fruitSpriteList.erase(m_fruitSpriteList.begin() + index);
 }
-
-void SnakeGameRenderer::update(const GameState& newGameState) {
-    m_headSprite.setPosition(getHeadCenter(newGameState.headPos));
-    m_eyeSprite.setPosition(getHeadCenter(newGameState.headPos));
-    m_eyeSprite.setRotation(directionToAngle(newGameState.direction));
-
-    updateTail(newGameState.segmentPositions);
-}
-
-void SnakeGameRenderer::draw(sf::RenderTarget& target, const sf::RenderStates states) const
-{
-    target.draw(m_gridVertices);
-    drawFruit(target, states);
-    drawPlayer(target, states);
-    
-}
-
-void SnakeGameRenderer::drawPlayer(sf::RenderTarget& target, const sf::RenderStates states) const
-{
-    target.draw(m_headSprite, states);
-    target.draw(m_endSprite, states);
-    target.draw(m_tailStrip, states);
-    target.draw(m_eyeSprite, states);
-}
-
-void SnakeGameRenderer::drawFruit(sf::RenderTarget& window, const sf::RenderStates& states) const {
-    for (const sf::Sprite& fruit : m_fruitSpriteList) {
-        window.draw(fruit, states);
-    };
-}
-
 
 std::vector<sf::Vector2f> SnakeGameRenderer::calcWidthVertex(sf::Vector2f position, sf::Angle angle) const
 {

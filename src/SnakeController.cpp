@@ -4,7 +4,6 @@
 #include "SnakeConfig.hpp"
 #include "SnakeModel.hpp"
 #include <SFML/System/Vector2.hpp>
-#include <iostream>
 #include "Screen.hpp"
 #include <string>
 #include <vector>
@@ -26,7 +25,7 @@ SnakeController::SnakeController() :
     ),
     m_startScreen(
         &m_textureHandler,
-        m_textureHandler.getTexture("gameover.png"),
+        m_textureHandler.getTexture("logo.png"),
         ""
     )
 {
@@ -68,12 +67,6 @@ SnakeController::SnakeController() :
     );
     m_endScreen.addButton(quitButton);
     m_startScreen.addButton(quitButton);
-}
-
-void SnakeController::drawGame()
-{
-    m_window.clear(sf::Color::Black);
-    m_window.draw(m_renderer);
 }
 
 bool SnakeController::hasLost()
@@ -175,14 +168,20 @@ void SnakeController::playSnake()
     SnakeGameRenderer::GameState newGameState = {
         m_model.getPlayer()->getBodyPositions(),
         m_model.getPlayer()->getPosition(),
-        m_model.getPlayer()->getMoveDirection()
+        m_model.getPlayer()->getMoveDirection(),
+        m_model.getScore()
     };
 
     if (hasLost())
     {
         m_gameState = GameMode::OVER;
         m_endScreen.setSubtext("Score: " + std::to_string(m_model.getScore()));
-    } else
+    } else if (m_model.getPlayer()->getLength() == SnakeConfig::AVAILIABLE_SQUARES)
+    {
+        m_gameState = GameMode::OVER;
+        m_endScreen.setSubtext("You Won!");
+    }
+    else
     {
         m_renderer.update(newGameState);
     }
@@ -226,7 +225,8 @@ void SnakeController::playGame()
         {
         case GameMode::GAME:
             playSnake();
-            drawGame();
+            m_window.clear(sf::Color::Black);
+            m_window.draw(m_renderer);
             break;
         case GameMode::OVER:
             processMenuEvents(m_endScreen.getButtons());

@@ -31,4 +31,9 @@ namespace SnakeConfig {
         static_cast<float>(WINDOW_DIMENSIONS.x)/2,
         300
     };
+
+    const sf::Vector2f SCORE_POSITION{
+        static_cast<float>(WINDOW_DIMENSIONS.x)/2,
+        20
+    };
 }

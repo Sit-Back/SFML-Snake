@@ -2,6 +2,7 @@
 
 #include "AssetHandler.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <deque>
 #include <vector>
 #include "utility.hpp"
@@ -12,6 +13,7 @@ class SnakeGameRenderer final : public sf::Drawable {
             std::deque<BodyPos> segmentPositions;
             sf::Vector2i headPos;
             Direction direction;
+            int score;
         };
         
         SnakeGameRenderer(sf::RenderWindow* window, AssetHandler* assetHandler);
@@ -53,6 +55,7 @@ class SnakeGameRenderer final : public sf::Drawable {
 
         ////Sprites
         //
+        sf::Text m_scoreCounter;
         sf::VertexArray m_gridVertices;
         sf::CircleShape m_headSprite;
         sf::CircleShape m_endSprite;

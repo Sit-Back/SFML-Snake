@@ -31,7 +31,6 @@ private:
     std::optional<Direction> getNextDirection();
     void processGameEvents();
     void processMenuEvents(std::vector<Button>* buttons);
-    void drawGame(); 
     void createFruit();
     void destroyFruit(int index);
 };
