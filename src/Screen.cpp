@@ -12,6 +12,10 @@ Screen::Screen(AssetHandler* assetHandler, sf::Texture* logo, std::string subtex
     auto logoCenter = m_logo.getLocalBounds().getCenter();
     m_logo.setOrigin(logoCenter);
     m_logo.setPosition(SnakeConfig::LOGO_POSITION);
+
+    auto subtextCenter = m_subtext.getLocalBounds().getCenter();
+    m_subtext.setOrigin(subtextCenter);
+    m_subtext.setPosition(SnakeConfig::SUBTEXT_POSITION);
 }
 void Screen::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(m_logo);
@@ -24,6 +28,12 @@ void Screen::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 void Screen::addButton(Button button) {
     m_buttons.push_back(button);
+}
+
+void Screen::setSubtext(std::string newText) {
+    m_subtext.setString(newText);
+    auto subtextCenter = m_subtext.getLocalBounds().getCenter();
+    m_subtext.setOrigin(subtextCenter);
 }
 
 std::vector<Button>* Screen::getButtons() {return &m_buttons;}

@@ -6,9 +6,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <iostream>
 #include "Screen.hpp"
+#include <string>
 #include <vector>
 #include <algorithm>
 #include "SnakeGameRenderer.hpp"
+#include "utility.hpp"
 
 SnakeController::SnakeController() :
     m_model(&m_textureHandler),
@@ -20,7 +22,12 @@ SnakeController::SnakeController() :
     m_endScreen(
         &m_textureHandler,
         m_textureHandler.getTexture("gameover.png"),
-        " "
+        ""
+    ),
+    m_startScreen(
+        &m_textureHandler,
+        m_textureHandler.getTexture("gameover.png"),
+        ""
     )
 {
     m_window.setVerticalSyncEnabled(true);
@@ -29,33 +36,39 @@ SnakeController::SnakeController() :
     sf::View gridView(sf::FloatRect({0, 0}, {800, 800}));
     m_window.setView(gridView);
 
-    Button button1(
+    Button playButton(
         SnakeConfig::BUTTON_1_POS,
         "PLAY",
         m_textureHandler.getFont("ui-font.ttf"),
-        [this](){startSnake();}
+        [this](){
+            m_model = SnakeModel(&m_textureHandler);
+            m_renderer = SnakeGameRenderer(&m_window, &m_textureHandler);
+            m_gameState = GameMode::GAME;
+        }
     );
-    m_endScreen.addButton(button1);
+    m_endScreen.addButton(playButton);
+    
+    Button startButton(
+        SnakeConfig::BUTTON_1_POS,
+        "START",
+        m_textureHandler.getFont("ui-font.ttf"),
+        [this](){
+            m_gameState = GameMode::GAME;
+        }
+    );
+    m_startScreen.addButton(startButton);
 
-    Button button2(
+    Button quitButton(
         SnakeConfig::BUTTON_2_POS,
         "QUIT",
         m_textureHandler.getFont("ui-font.ttf"),
-        [this](){quit();}
+        [this](){
+            m_window.close();
+        }
     );
-    m_endScreen.addButton(button2);
+    m_endScreen.addButton(quitButton);
+    m_startScreen.addButton(quitButton);
 }
-
-void SnakeController::startSnake() {
-    m_model = SnakeModel(&m_textureHandler);
-    m_renderer = SnakeGameRenderer(&m_window, &m_textureHandler);
-    m_gameState = GameMode::GAME;
-}
-
-void SnakeController::quit() {
-    m_window.close();
-}
-
 
 void SnakeController::drawGame()
 {
@@ -162,6 +175,7 @@ void SnakeController::playSnake()
     if (hasLost())
     {
         m_gameState = GameMode::OVER;
+        m_endScreen.setSubtext("Score: " + std::to_string(m_model.getScore()));
     } else
     {
         m_renderer.update(newGameState);
@@ -209,6 +223,11 @@ void SnakeController::playGame()
             processMenuEvents(m_endScreen.getButtons());
             m_window.clear();
             m_window.draw(m_endScreen);
+            break;
+        case GameMode::START:
+            processMenuEvents(m_startScreen.getButtons());
+            m_window.clear();
+            m_window.draw(m_startScreen);
             break;
         }
         m_window.display();

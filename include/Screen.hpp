@@ -10,6 +10,7 @@ class Screen final : public sf::Drawable {
         Screen(AssetHandler* assetHandler, sf::Texture* logo, std::string subtext);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void addButton(Button button);
+        void setSubtext(std::string newText);
 
         std::vector<Button>* getButtons();
     private:

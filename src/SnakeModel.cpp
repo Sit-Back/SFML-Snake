@@ -21,3 +21,4 @@ void SnakeModel::destroyFruitIndex(int index) {
 //
 Player* SnakeModel::getPlayer() {return &m_player;}
 std::vector<sf::Vector2i> SnakeModel::getFruitList() const {return m_fruitList;}
+int SnakeModel::getScore() const {return m_player.getLength() - Player::INITIAL_PLAYER_LENGTH;}

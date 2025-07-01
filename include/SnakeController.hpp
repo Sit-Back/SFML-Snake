@@ -25,13 +25,12 @@ private:
     SnakeGameRenderer m_renderer;
     sf::Clock m_timer;
     Screen m_endScreen;
-    GameMode m_gameState = GameMode::GAME;
+    Screen m_startScreen;
+    GameMode m_gameState = GameMode::START;
     void addMoveToBuffer(Direction move);
     std::optional<Direction> getNextDirection();
     void processGameEvents();
     void processMenuEvents(std::vector<Button>* buttons);
-    void startSnake();
-    void quit();
     void drawGame(); 
     void createFruit();
     void destroyFruit(int index);

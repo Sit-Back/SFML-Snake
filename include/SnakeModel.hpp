@@ -21,6 +21,7 @@ class SnakeModel
         sf::VertexArray getVertices() const;
         Player* getPlayer();
         std::vector<sf::Vector2i> getFruitList() const;
+        int getScore() const;
 
     private:
         //Member Variables

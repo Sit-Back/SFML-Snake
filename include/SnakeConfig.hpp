@@ -23,6 +23,11 @@ namespace SnakeConfig {
     };
     const sf::Vector2f LOGO_POSITION{
         static_cast<float>(WINDOW_DIMENSIONS.x)/2,
-        100
+        200
+    };
+
+    const sf::Vector2f SUBTEXT_POSITION{
+        static_cast<float>(WINDOW_DIMENSIONS.x)/2,
+        300
     };
 }
