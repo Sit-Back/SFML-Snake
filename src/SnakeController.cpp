@@ -151,7 +151,6 @@ void SnakeController::playSnake()
     processGameEvents();
 
     if (m_timer.getElapsedTime().asSeconds() > SnakeConfig::UPDATE_RATE) {
-        createFruit();
         if (!m_inputBuffer.empty()) {
             m_model.getPlayer()->setDirection(*getNextDirection());
         }
@@ -160,8 +159,16 @@ void SnakeController::playSnake()
             if (m_model.getPlayer()->getPosition() == m_model.getFruitList().at(i)) {
                 m_model.getPlayer()->incrementLength();
                 destroyFruit(i);
+                for (int i = 0 ; i < rand() % 3; i++) {
+                    createFruit();
+                }
             }
         }
+
+        if (m_model.getFruitList().size() == 0) {
+            createFruit();
+        }
+
         m_timer.restart();
     }
 
